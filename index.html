@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo" aria-label="Strixhaven Student Portal Home">
+    <span class="logo-icon">🏛️</span> Strixhaven
+  </a>
+  <div class="nav-links" role="list">
+    <a href="index.html" role="listitem">Home</a>
+    <a href="students.html" role="listitem">Students</a>
+    <a href="faculty.html" role="listitem">Faculty</a>
+    <a href="colleges.html" role="listitem">Colleges</a>
+    <a href="locations.html" role="listitem">Locations</a>
+    <a href="clubs.html" role="listitem">Clubs</a>
+    <a href="jobs.html" role="listitem">Jobs</a>
+    <a href="relationships.html" role="listitem">Relationships</a>
+    <a href="mystery-board.html" role="listitem">Mystery Board</a>
+    <a href="documents.html" role="listitem">Documents</a>
+    <a href="shared-notes.html" role="listitem">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+</nav>
+
+<div class="mobile-menu" role="navigation" aria-label="Mobile navigation">
+  <a href="index.html">🏠 Home</a>
+  <a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a>
+  <a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a>
+  <a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a>
+  <a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a>
+  <a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner" style="margin-bottom:2rem;">
+      <div class="sparkle-container" aria-hidden="true"></div>
+      <div class="hero-eyebrow">Academic Year · Curriculum of Chaos</div>
+      <h1>Welcome, First-Year</h1>
+      <p class="hero-tagline">You've been accepted to Strixhaven University — the most prestigious institution of magical learning in the known world. Your story begins now.</p>
+      <div class="hero-status">
+        <div class="status-dot" aria-hidden="true"></div>
+        <span>Term In Session · Campus Status: <strong>Suspiciously Calm</strong></span>
+      </div>
+    </div>
+
+    <!-- Quick Nav -->
+    <div class="section-heading">
+      <h2>Quick Access</h2>
+    </div>
+    <div class="quick-nav-grid" style="margin-bottom:2.5rem;">
+      <a href="students.html" class="quick-nav-card" aria-label="Students">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Students</span>
+      </a>
+      <a href="faculty.html" class="quick-nav-card" aria-label="Faculty">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-label">Faculty</span>
+      </a>
+      <a href="colleges.html" class="quick-nav-card" aria-label="Colleges">
+        <span class="nav-icon">🏛️</span>
+        <span class="nav-label">Colleges</span>
+      </a>
+      <a href="locations.html" class="quick-nav-card" aria-label="Locations">
+        <span class="nav-icon">🗺️</span>
+        <span class="nav-label">Locations</span>
+      </a>
+      <a href="clubs.html" class="quick-nav-card" aria-label="Clubs">
+        <span class="nav-icon">🎭</span>
+        <span class="nav-label">Clubs</span>
+      </a>
+      <a href="jobs.html" class="quick-nav-card" aria-label="Jobs">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Jobs</span>
+      </a>
+      <a href="relationships.html" class="quick-nav-card" aria-label="Relationships">
+        <span class="nav-icon">💝</span>
+        <span class="nav-label">Relationships</span>
+      </a>
+      <a href="mystery-board.html" class="quick-nav-card" aria-label="Mystery Board">
+        <span class="nav-icon">🔍</span>
+        <span class="nav-label">Mystery Board</span>
+      </a>
+      <a href="documents.html" class="quick-nav-card" aria-label="Documents">
+        <span class="nav-icon">📜</span>
+        <span class="nav-label">Documents</span>
+      </a>
+      <a href="shared-notes.html" class="quick-nav-card" aria-label="Study Notes">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">Study Notes</span>
+      </a>
+    </div>
+
+    <div class="divider-magic" aria-hidden="true"></div>
+
+    <!-- Three-column main area -->
+    <div class="grid-3" style="gap:2rem;align-items:start;margin-bottom:2.5rem;">
+
+      <!-- Campus Buzz -->
+      <div>
+        <div class="section-heading">
+          <h2>Campus Whispers</h2>
+          <button id="rumor-refresh" class="btn btn-ghost btn-sm" title="New whisper" aria-label="Load new campus whisper">↻ New</button>
+        </div>
+        <div class="card">
+          <div class="buzz-item">
+            <span class="buzz-icon">💬</span>
+            <div class="buzz-text"><em id="campus-rumor">Loading whispers from the halls...</em></div>
+          </div>
+          <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);">
+            <div class="buzz-item">
+              <span class="buzz-icon">📌</span>
+              <div class="buzz-text"><strong>Orientation Week</strong> has concluded. Regular classes are now in session.</div>
+            </div>
+            <div class="buzz-item">
+              <span class="buzz-icon">🏛️</span>
+              <div class="buzz-text"><strong>College selection</strong> will be available at the end of the first year.</div>
+            </div>
+            <div class="buzz-item">
+              <span class="buzz-icon">📚</span>
+              <div class="buzz-text"><strong>Biblioplex extended hours</strong> are now in effect during assessment periods.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured Students -->
+      <div>
+        <div class="section-heading">
+          <h2>Meet Your Peers</h2>
+          <a href="students.html" class="btn btn-ghost btn-sm">View All →</a>
+        </div>
+        <div id="featured-students" style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div class="card card-sm" style="text-align:center;color:var(--text-muted);">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Featured Locations -->
+      <div>
+        <div class="section-heading">
+          <h2>Explore Campus</h2>
+          <a href="locations.html" class="btn btn-ghost btn-sm">Map →</a>
+        </div>
+        <div id="featured-locations" style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div class="card card-sm" style="text-align:center;color:var(--text-muted);">Loading...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider-magic" aria-hidden="true"></div>
+
+    <!-- Colleges Preview -->
+    <div class="section-heading" style="margin-bottom:1.25rem;">
+      <h2>The Five Colleges</h2>
+      <a href="colleges.html" class="btn btn-ghost btn-sm">Explore All →</a>
+    </div>
+    <div class="grid-auto-sm" style="margin-bottom:2.5rem;">
+      <a href="colleges.html" class="card" style="text-decoration:none;text-align:center;border-top:2px solid var(--lorehold);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🏛️</div>
+        <div class="card-title" style="color:var(--lorehold-light);">Lorehold</div>
+        <p style="font-size:0.78rem;">History · Spirits · Ruins</p>
+      </a>
+      <a href="colleges.html" class="card" style="text-decoration:none;text-align:center;border-top:2px solid var(--prismari);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🎨</div>
+        <div class="card-title" style="color:var(--prismari-light);">Prismari</div>
+        <p style="font-size:0.78rem;">Art · Elements · Expression</p>
+      </a>
+      <a href="colleges.html" class="card" style="text-decoration:none;text-align:center;border-top:2px solid var(--quandrix);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🔮</div>
+        <div class="card-title" style="color:var(--quandrix-light);">Quandrix</div>
+        <p style="font-size:0.78rem;">Math · Patterns · Nature</p>
+      </a>
+      <a href="colleges.html" class="card" style="text-decoration:none;text-align:center;border-top:2px solid var(--silverquill);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">✒️</div>
+        <div class="card-title" style="color:var(--silverquill-light);">Silverquill</div>
+        <p style="font-size:0.78rem;">Words · Debate · Shadow</p>
+      </a>
+      <a href="colleges.html" class="card" style="text-decoration:none;text-align:center;border-top:2px solid var(--witherbloom);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🌿</div>
+        <div class="card-title" style="color:var(--witherbloom-light);">Witherbloom</div>
+        <p style="font-size:0.78rem;">Life · Death · Growth</p>
+      </a>
+    </div>
+
+    <!-- Bottom CTA strip -->
+    <div class="card" style="text-align:center;padding:2.5rem;background:linear-gradient(135deg,var(--bg-card),var(--bg-panel));">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">🔍</div>
+      <h3 style="margin-bottom:0.5rem;">Something Strange Is Happening</h3>
+      <p style="max-width:480px;margin:0 auto 1.25rem;">Campus life at Strixhaven is never quite what it seems. Track clues, record observations, and keep your friends close on the Mystery Board.</p>
+      <a href="mystery-board.html" class="btn btn-primary">Open Mystery Board</a>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · For Campaign Use Only · Content inspired by <em>Strixhaven: A Curriculum of Chaos</em></p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>initHomePage();</script>
+</body>
+</html>

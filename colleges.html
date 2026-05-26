@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colleges — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html" class="active">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html" class="active">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Academic Colleges</div>
+      <h1>Choose Your College Path</h1>
+      <p>Strixhaven has five colleges, each representing a different magical philosophy. First-years explore freely before declaring. Click any college to learn more.</p>
+    </div>
+
+    <div id="colleges-grid" class="grid-auto-lg" role="list" aria-label="College directory">
+      <div class="card" style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🏛️</div>
+        Loading college information...
+      </div>
+    </div>
+
+    <div class="divider-magic" style="margin-top:3rem;"></div>
+
+    <!-- Compare section -->
+    <div class="section-heading" style="margin-bottom:1.25rem;margin-top:2rem;">
+      <h2>At A Glance</h2>
+    </div>
+    <div class="card card-lg" style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border);">
+            <th style="text-align:left;padding:0.6rem 0.75rem;color:var(--text-muted);font-weight:600;">College</th>
+            <th style="text-align:left;padding:0.6rem 0.75rem;color:var(--text-muted);font-weight:600;">Magic Type</th>
+            <th style="text-align:left;padding:0.6rem 0.75rem;color:var(--text-muted);font-weight:600;">Campus Vibe</th>
+            <th style="text-align:left;padding:0.6rem 0.75rem;color:var(--text-muted);font-weight:600;">Mascot</th>
+          </tr>
+        </thead>
+        <tbody id="college-table-body">
+          <tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--text-muted);">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initCollegesPage();
+  const colleges = await fetchData('colleges.json');
+  const tbody = document.getElementById('college-table-body');
+  if (tbody && colleges.length) {
+    tbody.innerHTML = colleges.map(c => `
+      <tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openCollegeModal(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+        <td style="padding:0.6rem 0.75rem;">
+          <span style="margin-right:0.4rem;">${c.emblem}</span>
+          <strong style="color:${c.colorLight};">${c.name}</strong>
+        </td>
+        <td style="padding:0.6rem 0.75rem;color:var(--text-secondary);">${c.magical_focus.slice(0,50)}...</td>
+        <td style="padding:0.6rem 0.75rem;color:var(--text-secondary);">${c.campus_vibe.slice(0,50)}...</td>
+        <td style="padding:0.6rem 0.75rem;">${c.mascot}</td>
+      </tr>`).join('');
+  }
+});
+</script>
+</body>
+</html>

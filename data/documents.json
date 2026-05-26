@@ -1,0 +1,74 @@
+[
+  {
+    "id": "acceptance-letter",
+    "title": "Letter of Acceptance — Strixhaven University",
+    "type": "Official Letter",
+    "emoji": "📜",
+    "tags": ["official", "personal", "welcome"],
+    "content": "STRIXHAVEN UNIVERSITY\nOffice of Admissions — Biblioplex, Central Campus\n\nDear Incoming Student,\n\nIt is with great pleasure that I extend to you this formal offer of admission to Strixhaven University for the upcoming academic term.\n\nYou have been identified as an individual of exceptional magical aptitude. The Founder's Orb has confirmed what our examining board already suspected: you belong here.\n\nYou are expected to report for Orientation Week in the designated first-year dormitory halls. Your academic advisor will be assigned during your first week of study. In the meantime, please review the enclosed Student Handbook, which contains everything you need to know about life at the most prestigious institution of magical learning in the known world.\n\nBring comfortable shoes. The Biblioplex is larger than it appears.\n\nWelcome to Strixhaven.\n\nWith the highest academic regards,\n\nThe Office of Admissions\nStrixhaven University"
+  },
+  {
+    "id": "student-handbook",
+    "title": "First-Year Student Handbook (Excerpt)",
+    "type": "Handbook",
+    "emoji": "📖",
+    "tags": ["official", "reference", "rules"],
+    "content": "STRIXHAVEN UNIVERSITY\nFIRST-YEAR STUDENT HANDBOOK\n\nWELCOME TO STRIXHAVEN\n\nYou are now among the most privileged students in the world. Strixhaven has trained mages for over a thousand years. The knowledge held within these walls is without parallel.\n\nWith that privilege comes responsibility.\n\nACCOUNT IN GOOD STANDING\nAll students must maintain their Academic Standing to participate in extracurricular activities, hold jobs, and pursue advanced coursework. Academic Standing is maintained through attendance, examination performance, and meeting advisor expectations.\n\nCOLLEGE SELECTION\nFirst-year students are encouraged to explore all five colleges before declaring. College selection typically occurs in the second year, though some students arrive knowing their path.\n\nCODE OF STUDENT CONDUCT\nMagical misconduct, unauthorized use of restricted texts, and deliberate harm to fellow students will result in disciplinary review. The University takes seriously both the letter and spirit of these guidelines.\n\nEXTRACURRICULARS & EMPLOYMENT\nStudents are encouraged to participate in campus life through clubs and employment opportunities. These activities contribute to your Extracurricular Standing and open social and academic doors.\n\nTHE BIBLIOPLEX\nStudents may access the main Biblioplex at all standard hours. Restricted sections require faculty authorization. The Biblioplex closes at midnight. Do not attempt to stay past closing. The Biblioplex is not smaller at night. It is larger.\n\n— Office of Student Affairs, Strixhaven University"
+  },
+  {
+    "id": "firejolt-menu",
+    "title": "Firejolt Café — Seasonal Menu",
+    "type": "Menu",
+    "emoji": "☕",
+    "tags": ["food", "social", "firejolt"],
+    "content": "FIREJOLT CAFÉ\nYour campus home for magically enhanced refreshments\n\n— FEATURED DRINKS THIS TERM —\n\nThe Emberwhist Latte\nA rich, spiced coffee infused with trace fire elemental essence. Warming from the inside out. Note: slight ember effect at the bottom of the cup is cosmetic.\n\nThe Twilight Steep\nA deep purple tea blend with notes of midnight lavender and dream root. Calming but alert. Popular during exam season.\n\nThe Prismari Sunrise\nLayered elemental fruit drink. Colors shift as you sip. Different each time. We're genuinely unsure why.\n\nThe Quandrix Clarity\nMathematically precise cold brew. Identical every time. Beloved by Quandrix students for this reason.\n\nSilverquill Ink & Cream\nBlack sesame cold drink with sweet cream. Sharp, stylish, strongly recommended.\n\nThe Sedgemoor Fog\nHerbal witherbloom blend. Tastes like forest mornings. Contains trace amounts of bioluminescent fungi (non-toxic).\n\n— SNACKS —\nStudy Scones (plain, spiced, or enchanted)\nLorehold Crumble (ancient grain, actually)\nSeasonal fruit — whatever the grounds crew has harvested\n\nOpen daily. First drinks of the morning prepared before the sun is fully up."
+  },
+  {
+    "id": "bows-end-notice",
+    "title": "Bow's End Tavern — Notice Board",
+    "type": "Notice",
+    "emoji": "📌",
+    "tags": ["social", "tavern", "notice"],
+    "content": "BOW'S END TAVERN\nThe End of Bow's End Lane — Est. a Very Long Time Ago\n\n— NOTICE BOARD —\n\nFRIDAY NIGHT: Extended hours for the end of the second study week. Kitchen open until late. The usual rules apply.\n\nLOST & FOUND: One extremely enchanted scarf found on bench near the fire. Deep blue, hums slightly. Owner please inquire at bar.\n\nSEEKING: Study group forming for first-year arcane theory foundations. Meets Tuesdays. All colleges welcome. Ask for Greta.\n\nFOR SALE: Slightly used collection of Lorehold expedition maps. Some water damage. All sites still accessible. I think. — C.D.\n\nNOTICE: The Bow's End Arm Wrestling Championship will be held at the end of term. Sign-ups on the board by the door. All colleges may compete. Greta Gorunn is the defending champion and would like challengers to know this.\n\nThe management reminds all students that transmutation of the furniture is still not permitted. The chairs remember last time."
+  },
+  {
+    "id": "dorm-notice",
+    "title": "First-Year Dormitory — House Notice",
+    "type": "Notice",
+    "emoji": "🏠",
+    "tags": ["dorms", "residential", "notice"],
+    "content": "FIRST-YEAR DORMITORY HALLS\nNotice from the Residential Advisory Board\n\nDear Residents,\n\nA few reminders as we enter the second week of term:\n\n1. The warming enchantments in Hall C are not thermostats. They respond to emotional state. If your room is uncomfortably hot, please speak with a counselor.\n\n2. The study rooms on Floor 2 are available by sign-up. They are not available by 'occupying them until someone else gives up.' We have seen the notes left on the doors.\n\n3. Please do not transfigure the common room furniture. We have noted that the armchair in the northeast corner remains shaped as something other than an armchair. We are watching this situation.\n\n4. Quiet hours are midnight to 7am. Quiet hours apply to magical noise as well as physical noise. The Prismari students know what this means.\n\n5. Residents are reminded that the dormitory wards are maintained by the university and are NOT invitations to test them.\n\nYour Residential Advisory Board thanks you for your cooperation.\n\nP.S. Whoever has been leaving fresh flowers outside room 12 every morning — this is lovely. Please continue."
+  },
+  {
+    "id": "exam-notice",
+    "title": "Academic Notice — Examination Period",
+    "type": "Academic Notice",
+    "emoji": "📋",
+    "tags": ["academic", "exam", "official"],
+    "content": "STRIXHAVEN UNIVERSITY\nOffice of Academic Affairs\n\nNOTICE TO ALL FIRST-YEAR STUDENTS\n\nRegarding the upcoming Foundational Assessment Period:\n\nAll first-year students are required to complete their Foundational Assessments in the relevant core magical disciplines. Assessment dates are posted outside each college's administrative office and on the Biblioplex main board.\n\nStudents are advised to:\n— Review course notes from all mandatory foundational lectures\n— Consult their assigned faculty advisor regarding any areas of concern\n— Arrive to assessments with sufficient spell components for practical sections\n— Refrain from using glamours, enchantments, or mind-affecting spells to influence examination results or examiners\n\nAcademic integrity is enforced through both conventional and magical means.\n\nThe Biblioplex will be open for extended study hours during the Assessment Period. Please reserve study rooms in advance.\n\nOffice of Academic Affairs\nStrixhaven University"
+  },
+  {
+    "id": "campus-safety",
+    "title": "Campus Safety Notice",
+    "type": "Safety Notice",
+    "emoji": "⚠️",
+    "tags": ["official", "safety", "campus"],
+    "content": "STRIXHAVEN UNIVERSITY\nCampus Safety Office\n\nNOTICE TO ALL STUDENTS\n\nThe Campus Safety Office reminds all students of the following guidelines for a safe and productive academic experience:\n\nRESTRICTED AREAS\nCertain areas of campus are designated restricted for documented safety reasons. These restrictions apply to all students regardless of college, year, or academic standing. Students found in restricted areas may face disciplinary review.\n\nMAGICAL INCIDENTS\nAll magical incidents, regardless of severity, should be reported to the Campus Safety Office or to any faculty member. Do not attempt to resolve magical accidents independently if you are uncertain of the cause. Some magical effects compound when interfered with.\n\nSEDGEMOOR\nStudents visiting Sedgemoor are reminded to use the marked paths. The marked paths exist for a reason. We have retrieved students from Sedgemoor who did not use the marked paths. It takes considerable effort and paperwork.\n\nBIBLIOPLEX AFTER HOURS\nDo not attempt to access the Biblioplex after closing. We cannot stress this enough. The Biblioplex after hours is navigated by staff with specific training and protective equipment. You do not have these things.\n\nStay curious. Stay safe.\n\nCampus Safety Office\nStrixhaven University"
+  },
+  {
+    "id": "club-flyer-drama",
+    "title": "Playactors Drama Guild — Audition Notice",
+    "type": "Club Flyer",
+    "emoji": "🎭",
+    "tags": ["club", "prismari", "drama", "audition"],
+    "content": "PLAYACTORS DRAMA GUILD\npresents\n\nAUDITIONS\nfor our upcoming term production\n\nAre you a student of the performing arts?\nDo you feel that ordinary life lacks sufficient dramatic intensity?\nDo you believe that magic and theater are two expressions of the same truth?\n\nThen we want to see you.\n\nAuditions will be held at the Rose Stage.\nPrepare a short monologue (magical or non-magical) and one movement piece.\n\nAll colleges welcome. All year levels welcome. All performance backgrounds welcome.\n\nThere are no small roles in the Playactors Drama Guild.\nThere are small performances.\nWe do not do small performances.\n\nFor audition times and production details:\nFind us in the Prismari Campus rehearsal halls, or leave a note for the Guild Secretary.\n\n'The stage is only a mirror. What you see in it is what you bring.'\n— Playactors Drama Guild motto"
+  },
+  {
+    "id": "relationship-note-template",
+    "title": "Student Observation Note (Blank Template)",
+    "type": "Personal Note",
+    "emoji": "📝",
+    "tags": ["personal", "template", "relationship"],
+    "content": "PERSONAL OBSERVATION NOTE\n\nSubject: ___________________\nDate: _____________________\nLocation: __________________\n\nWhat I observed:\n\n\n\nWhat it might mean:\n\n\n\nFollow-up needed:\n[ ] Yes  [ ] No  [ ] Not sure yet\n\nNotes:\n\n\n\n— Use this template for tracking interactions, observations, and social notes."
+  }
+]

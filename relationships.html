@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relationships — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💝</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html" class="active">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html" class="active">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Relationship Ledger</div>
+      <h1>Known Associates</h1>
+      <p>Track your bonds, rivals, and connections across campus. Click any card to update your relationship status and add personal notes.</p>
+    </div>
+
+    <!-- Relationship system explainer -->
+    <div class="card" style="margin-bottom:1.5rem;border-left:3px solid var(--gold);">
+      <h4 style="margin-bottom:0.5rem;font-size:0.95rem;">How Relationships Work</h4>
+      <p style="font-size:0.85rem;">Your bond with each NPC ranges from <strong>-2 to +4</strong>. Positive bonds unlock <strong>boons</strong> — advantages, help, and favors. Negative bonds risk <strong>banes</strong> — interference, rumors, and rivalry. The status label (Friend, Rival, etc.) is yours to set — it reflects how you see the relationship.</p>
+    </div>
+
+    <div class="filter-bar" role="search">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="text" id="rel-search" placeholder="Search by name..." aria-label="Search relationships">
+      </div>
+      <div class="filter-group" role="group" aria-label="Filter by status">
+        <button class="filter-btn rel-filter-btn active" data-status="all">All</button>
+        <button class="filter-btn rel-filter-btn" data-status="Unknown">Unknown</button>
+        <button class="filter-btn rel-filter-btn" data-status="Friend">Friend</button>
+        <button class="filter-btn rel-filter-btn" data-status="Beloved">Beloved</button>
+        <button class="filter-btn rel-filter-btn" data-status="Trusted">Trusted</button>
+        <button class="filter-btn rel-filter-btn" data-status="Rival">Rival</button>
+        <button class="filter-btn rel-filter-btn" data-status="Suspicious">Suspicious</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <label for="rel-sort" style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">Sort by:</label>
+        <select id="rel-sort" class="filter-select">
+          <option value="default">Default</option>
+          <option value="name">Name</option>
+          <option value="college">College</option>
+          <option value="bond">Bond Score</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
+      <p style="font-size:0.82rem;color:var(--text-muted);">Showing <span id="rel-count">—</span> people</p>
+      <p style="font-size:0.78rem;color:var(--text-muted);">⭐ = Favorited &nbsp;·&nbsp; Changes saved in your browser</p>
+    </div>
+
+    <div id="rel-grid" class="grid-auto" role="list" aria-label="Relationship tracker">
+      <div class="card" style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">Loading...</div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>document.addEventListener('DOMContentLoaded', initRelationshipsPage);</script>
+</body>
+</html>

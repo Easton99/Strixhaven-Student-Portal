@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html" class="active">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html" class="active">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Faculty Advisory</div>
+      <h1>Faculty & Staff</h1>
+      <p>Deans, professors, and staff who shape life at Strixhaven. Each college is led by two Deans representing its philosophical poles.</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar" role="search">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="text" id="faculty-search" placeholder="Search faculty..." aria-label="Search faculty">
+      </div>
+      <div class="filter-group" role="group" aria-label="Filter by college">
+        <button class="filter-btn faculty-college-btn active" data-college="all">All</button>
+        <button class="filter-btn faculty-college-btn" data-college="Lorehold">🏛️ Lorehold</button>
+        <button class="filter-btn faculty-college-btn" data-college="Prismari">🎨 Prismari</button>
+        <button class="filter-btn faculty-college-btn" data-college="Quandrix">🔮 Quandrix</button>
+        <button class="filter-btn faculty-college-btn" data-college="Silverquill">✒️ Silverquill</button>
+        <button class="filter-btn faculty-college-btn" data-college="Witherbloom">🌿 Witherbloom</button>
+        <button class="filter-btn faculty-college-btn" data-college="null">⚪ Non-College</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <p style="font-size:0.82rem;color:var(--text-muted);">Showing <span id="faculty-count">—</span> faculty members</p>
+    </div>
+
+    <div id="faculty-grid" class="grid-auto" role="list" aria-label="Faculty directory">
+      <div class="card" style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🎓</div>
+        Loading faculty records...
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const faculty = await fetchData('faculty.json');
+  let filtered = [...faculty];
+  let activeCollege = 'all';
+  let searchQuery = '';
+  const grid = document.getElementById('faculty-grid');
+  const count = document.getElementById('faculty-count');
+
+  function render() {
+    if (!grid) return;
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>No results.</p></div>`;
+      if (count) count.textContent = '0'; return;
+    }
+    if (count) count.textContent = filtered.length;
+    grid.innerHTML = filtered.map(npc => npcCard(npc)).join('');
+    grid.querySelectorAll('.npc-card').forEach(card => {
+      card.addEventListener('click', () => { const n = faculty.find(x => x.id === card.dataset.id); if (n) openFacultyModal(n); });
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') card.click(); });
+    });
+  }
+
+  function applyFilters() {
+    filtered = faculty.filter(f => {
+      const college = f.college || 'null';
+      const mc = activeCollege === 'all' || college === activeCollege;
+      const ms = !searchQuery || ['name','personality','vibe','college','role','title'].some(k => (f[k]||'').toLowerCase().includes(searchQuery.toLowerCase()));
+      return mc && ms;
+    });
+    render();
+  }
+
+  document.getElementById('faculty-search')?.addEventListener('input', function(){ searchQuery = this.value; applyFilters(); });
+  document.querySelectorAll('.faculty-college-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.faculty-college-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCollege = btn.dataset.college;
+      applyFilters();
+    });
+  });
+
+  render();
+});
+
+function openFacultyModal(f) {
+  openModal(`
+    <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.25rem;">
+      <div class="card-avatar" style="width:60px;height:60px;font-size:2rem;">${f.emoji||'🎓'}</div>
+      <div>
+        <h2 style="font-size:1.3rem;margin-bottom:0.2rem;">${f.name}</h2>
+        <p style="font-size:0.85rem;color:var(--gold);">${f.title||f.role}</p>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.4rem;">
+          ${f.college ? collegeBadge(f.college) : '<span class="badge badge-neutral">Campus-Wide</span>'}
+          <span class="badge badge-gold">Faculty</span>
+          <span class="badge badge-neutral">${f.race||''}</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.4rem;">Specialty</div>
+      <p style="font-size:0.88rem;">${f.specialty||''}</p>
+    </div>
+    <p style="color:var(--text-secondary);margin-bottom:1rem;font-family:'Crimson Pro',serif;font-size:1.05rem;line-height:1.8;">${f.personality||''}</p>
+    <div style="background:rgba(200,169,90,0.07);border:1px solid var(--gold-dim);border-radius:8px;padding:0.75rem;">
+      <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:0.3rem;">Student Take</div>
+      <p style="font-size:0.88rem;font-style:italic;">${f.playerSummary||''}</p>
+    </div>
+  `);
+}
+</script>
+</body>
+</html>

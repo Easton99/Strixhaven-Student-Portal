@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clubs — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html" class="active">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html" class="active">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Clubs Recruiting Now</div>
+      <h1>Extracurriculars & Clubs</h1>
+      <p>Campus life is more than classes. Clubs are where relationships form, reputations are built, and interesting things happen. Click any club to learn more — or join.</p>
+    </div>
+
+    <div class="filter-bar" role="search">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="text" id="club-search" placeholder="Search clubs..." aria-label="Search clubs">
+      </div>
+      <div class="filter-group" role="group">
+        <button class="filter-btn club-filter-btn active" data-tag="all">All Clubs</button>
+        <button class="filter-btn club-filter-btn" data-tag="performance">Performance</button>
+        <button class="filter-btn club-filter-btn" data-tag="athletic">Athletic</button>
+        <button class="filter-btn club-filter-btn" data-tag="academic">Academic</button>
+        <button class="filter-btn club-filter-btn" data-tag="social">Social</button>
+        <button class="filter-btn club-filter-btn" data-tag="creative">Creative</button>
+        <button class="filter-btn club-filter-btn" data-tag="investigative">Investigative</button>
+      </div>
+    </div>
+
+    <div id="clubs-grid" class="grid-auto" role="list" aria-label="Clubs directory">
+      <div class="card" style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">Loading...</div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const clubs = await fetchData('clubs.json');
+  const joined = LS.get('clubs_joined', []);
+  let filtered = [...clubs];
+  let activeTag = 'all';
+  let searchQuery = '';
+  const grid = document.getElementById('clubs-grid');
+
+  function render() {
+    if (!grid) return;
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🎭</div><p>No clubs found.</p></div>`;
+      return;
+    }
+    const currentJoined = LS.get('clubs_joined', []);
+    grid.innerHTML = filtered.map(c => clubCard(c, currentJoined.includes(c.id))).join('');
+    grid.querySelectorAll('.club-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const club = clubs.find(c => c.id === card.dataset.id);
+        if (club) openClubModal(club, LS.get('clubs_joined',[]).includes(club.id));
+      });
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') card.click(); });
+    });
+  }
+
+  function applyFilters() {
+    filtered = clubs.filter(c => {
+      const mt = activeTag === 'all' || c.tags?.some(t => t.toLowerCase() === activeTag.toLowerCase());
+      const ms = !searchQuery || [c.name,c.vibe,c.description].some(f => (f||'').toLowerCase().includes(searchQuery.toLowerCase()));
+      return mt && ms;
+    });
+    render();
+  }
+
+  document.getElementById('club-search')?.addEventListener('input', function(){ searchQuery = this.value; applyFilters(); });
+  document.querySelectorAll('.club-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.club-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTag = btn.dataset.tag || 'all';
+      applyFilters();
+    });
+  });
+
+  render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a>
+    <a href="documents.html" class="active">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a>
+  <a href="documents.html" class="active">📜 Documents</a><a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Student Document Archive</div>
+      <h1>Handouts & Documents</h1>
+      <p>Official letters, notices, menus, flyers, and handouts collected during your time at Strixhaven. Click any document to read it in full.</p>
+    </div>
+
+    <div class="filter-bar" role="search">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="text" id="doc-search" placeholder="Search documents..." aria-label="Search documents">
+      </div>
+      <div class="filter-group" role="group">
+        <button class="filter-btn doc-filter-btn active" data-tag="all">All</button>
+        <button class="filter-btn doc-filter-btn" data-tag="official">Official</button>
+        <button class="filter-btn doc-filter-btn" data-tag="notice">Notice</button>
+        <button class="filter-btn doc-filter-btn" data-tag="food">Menu</button>
+        <button class="filter-btn doc-filter-btn" data-tag="club">Club</button>
+        <button class="filter-btn doc-filter-btn" data-tag="personal">Personal</button>
+      </div>
+    </div>
+
+    <div id="docs-grid" class="grid-auto" role="list" aria-label="Documents archive">
+      <div class="card" style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">Loading archive...</div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const docs = await fetchData('documents.json');
+  let filtered = [...docs];
+  let activeTag = 'all';
+  let searchQuery = '';
+  const grid = document.getElementById('docs-grid');
+
+  function render() {
+    if (!grid) return;
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📜</div><p>No documents found.</p></div>`;
+      return;
+    }
+    grid.innerHTML = filtered.map(d => docCard(d)).join('');
+    grid.querySelectorAll('.document-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const doc = docs.find(d => d.id === card.dataset.id);
+        if (doc) openDocModal(doc);
+      });
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') card.click(); });
+    });
+  }
+
+  function applyFilters() {
+    filtered = docs.filter(d => {
+      const mt = activeTag === 'all' || d.tags?.some(t => t.toLowerCase() === activeTag.toLowerCase());
+      const ms = !searchQuery || [d.title, d.type].some(f => (f||'').toLowerCase().includes(searchQuery.toLowerCase()));
+      return mt && ms;
+    });
+    render();
+  }
+
+  document.getElementById('doc-search')?.addEventListener('input', function(){ searchQuery = this.value; applyFilters(); });
+  document.querySelectorAll('.doc-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.doc-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTag = btn.dataset.tag || 'all';
+      applyFilters();
+    });
+  });
+
+  render();
+});
+</script>
+</body>
+</html>

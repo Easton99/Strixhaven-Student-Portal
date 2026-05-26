@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Locations — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html" class="active">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html" class="active">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Campus Directory</div>
+      <h1>Campus Locations</h1>
+      <p>Every corner of Strixhaven has its own character. Browse, filter, and add your own notes about the places you've explored.</p>
+    </div>
+
+    <div class="filter-bar" role="search">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="text" id="loc-search" placeholder="Search locations..." aria-label="Search locations">
+      </div>
+      <div class="filter-group" role="group" aria-label="Filter by region">
+        <button class="filter-btn loc-filter-btn active" data-tag="all">All</button>
+        <button class="filter-btn loc-filter-btn" data-tag="central">Central Campus</button>
+        <button class="filter-btn loc-filter-btn" data-tag="lorehold">Lorehold</button>
+        <button class="filter-btn loc-filter-btn" data-tag="prismari">Prismari</button>
+        <button class="filter-btn loc-filter-btn" data-tag="quandrix">Quandrix</button>
+        <button class="filter-btn loc-filter-btn" data-tag="silverquill">Silverquill</button>
+        <button class="filter-btn loc-filter-btn" data-tag="witherbloom">Witherbloom</button>
+      </div>
+      <div class="filter-group" role="group" aria-label="Filter by type">
+        <button class="filter-btn loc-filter-btn" data-tag="social">Social</button>
+        <button class="filter-btn loc-filter-btn" data-tag="study">Study</button>
+        <button class="filter-btn loc-filter-btn" data-tag="food/drink">Food & Drink</button>
+        <button class="filter-btn loc-filter-btn" data-tag="mystery">Mystery</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <p style="font-size:0.82rem;color:var(--text-muted);">Showing <span id="loc-count">—</span> locations</p>
+    </div>
+
+    <div id="locations-grid" class="grid-auto" role="list" aria-label="Locations directory">
+      <div class="card" style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">Loading...</div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>document.addEventListener('DOMContentLoaded', initLocationsPage);</script>
+</body>
+</html>

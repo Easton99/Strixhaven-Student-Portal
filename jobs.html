@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Jobs — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html" class="active">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html" class="active">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container-sm page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Student Employment Board</div>
+      <h1>Campus Jobs</h1>
+      <p>Part-time work that fits around your studies. Campus jobs come with social access, useful contacts, and roleplay opportunities you won't find in class.</p>
+    </div>
+
+    <div style="background:rgba(200,169,90,0.06);border:1px solid var(--gold-dim);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;">
+      <span style="font-size:1.2rem;">💼</span>
+      <div>
+        <strong style="font-size:0.85rem;color:var(--gold-light);">Your Current Job:</strong>
+        <span id="my-job-display" style="font-size:0.85rem;color:var(--text-secondary);margin-left:0.5rem;">None — click a job below to take it</span>
+      </div>
+    </div>
+
+    <div class="job-board">
+      <div class="job-board-header">
+        <span style="font-size:1.3rem;">📋</span>
+        <div>
+          <h3 style="font-size:1rem;margin-bottom:0.1rem;">Open Positions</h3>
+          <p style="font-size:0.78rem;color:var(--text-muted);">Click any listing for full details</p>
+        </div>
+      </div>
+      <div id="jobs-grid">
+        <div style="text-align:center;color:var(--text-muted);padding:2rem;">Loading positions...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initJobsPage();
+  updateJobDisplay();
+});
+function updateJobDisplay() {
+  const myJob = LS.get('my_job', null);
+  const el = document.getElementById('my-job-display');
+  if (!el) return;
+  if (myJob) {
+    fetchData('jobs.json').then(jobs => {
+      const job = jobs.find(j => j.id === myJob);
+      if (job) el.textContent = job.name + ' at ' + job.location;
+    });
+  } else {
+    el.textContent = 'None — click a job below to take it';
+  }
+}
+const _origToggleJob = toggleJob;
+window.toggleJob = function(id, currently) {
+  _origToggleJob(id, currently);
+  updateJobDisplay();
+};
+</script>
+</body>
+</html>

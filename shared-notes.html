@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Notes — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a><a href="documents.html">Documents</a>
+    <a href="shared-notes.html" class="active">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a><a href="documents.html">📜 Documents</a>
+  <a href="shared-notes.html" class="active">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-label">Shared Study Notes</div>
+      <h1>Your Study Notes</h1>
+      <p>Personal notes organized by category. Saved in your browser — export as JSON to back up or share with your party.</p>
+    </div>
+
+    <!-- Storage warning -->
+    <div style="background:rgba(200,169,90,0.06);border:1px solid var(--gold-dim);border-radius:var(--radius-md);padding:0.75rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;">
+      <span>💾</span>
+      <p style="font-size:0.82rem;color:var(--text-secondary);">Notes are stored in <strong>this browser only</strong>. Use Export/Import to back up or share. For a shared Google Doc, <a href="#shared-link" onclick="document.getElementById('shared-link-section').style.display='block';return false;" style="color:var(--gold);">see options below</a>.</p>
+    </div>
+
+    <div class="notes-container">
+      <!-- Sidebar -->
+      <div id="notes-sidebar" class="notes-sidebar" role="navigation" aria-label="Note sections">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Editor -->
+      <div class="notes-editor">
+        <div class="notes-editor-header">
+          <h3 id="notes-section-title" style="font-size:1rem;">Loading...</h3>
+          <div style="display:flex;gap:0.4rem;">
+            <button id="notes-save-btn" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </div>
+        <textarea id="notes-textarea" class="notes-textarea" placeholder="Start writing your notes here...
+
+This section auto-saves as you type.
+
+Feel free to use any format — bullet points, paragraphs, whatever works for you." aria-label="Note editor"></textarea>
+        <div class="notes-footer">
+          <button id="notes-export-btn" class="btn btn-secondary btn-sm">⬇ Export JSON</button>
+          <button id="notes-import-btn" class="btn btn-secondary btn-sm">⬆ Import JSON</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shared options -->
+    <div id="shared-link-section" style="display:none;margin-top:1.5rem;" id="shared-link">
+      <div class="card">
+        <h4 style="margin-bottom:0.75rem;">Shared Note Options</h4>
+        <p style="font-size:0.88rem;margin-bottom:1rem;">For notes your whole party can access, here are three approaches:</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;">
+          <div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;">
+            <div style="font-size:1.3rem;margin-bottom:0.5rem;">📄</div>
+            <h5 style="font-size:0.9rem;margin-bottom:0.3rem;">Google Doc</h5>
+            <p style="font-size:0.8rem;color:var(--text-secondary);">Create a shared Google Doc and paste the link here. Free, collaborative, accessible anywhere.</p>
+            <input type="text" id="gdoc-link" placeholder="Paste Google Doc link..." style="width:100%;margin-top:0.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:0.4rem 0.6rem;color:var(--text-primary);font-family:inherit;font-size:0.8rem;outline:none;">
+            <button onclick="saveGdocLink()" class="btn btn-secondary btn-sm" style="margin-top:0.5rem;width:100%;">Save Link</button>
+            <div id="gdoc-link-display" style="display:none;margin-top:0.5rem;">
+              <a id="gdoc-link-a" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="width:100%;text-align:center;display:block;">Open Shared Doc →</a>
+            </div>
+          </div>
+          <div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;">
+            <div style="font-size:1.3rem;margin-bottom:0.5rem;">💻</div>
+            <h5 style="font-size:0.9rem;margin-bottom:0.3rem;">GitHub Issues</h5>
+            <p style="font-size:0.8rem;color:var(--text-secondary);">Use GitHub Issues on the portal repo for threaded discussion. Each session can be a comment thread.</p>
+          </div>
+          <div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;">
+            <div style="font-size:1.3rem;margin-bottom:0.5rem;">📁</div>
+            <h5 style="font-size:0.9rem;margin-bottom:0.3rem;">JSON File Sharing</h5>
+            <p style="font-size:0.8rem;color:var(--text-secondary);">Export your notes as JSON after each session and share in Discord. Others can import the file to sync.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initNotesPage();
+  // Load saved Google Doc link
+  const savedLink = LS.get('gdoc_link', null);
+  if (savedLink) {
+    document.getElementById('gdoc-link').value = savedLink;
+    showGdocLink(savedLink);
+  }
+});
+
+function saveGdocLink() {
+  const link = document.getElementById('gdoc-link')?.value.trim();
+  if (!link) { showToast('Please enter a link.', 'warn'); return; }
+  LS.set('gdoc_link', link);
+  showGdocLink(link);
+  showToast('Link saved!', 'success');
+}
+
+function showGdocLink(link) {
+  const display = document.getElementById('gdoc-link-display');
+  const anchor = document.getElementById('gdoc-link-a');
+  if (display && anchor) {
+    anchor.href = link;
+    display.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

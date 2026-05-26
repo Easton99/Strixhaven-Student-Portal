@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mystery Board — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+  <style>
+    .mystery-board-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .mystery-stats {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .mystery-stat {
+      text-align: center;
+    }
+    .mystery-stat-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: var(--text-heading);
+    }
+    .mystery-stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a><a href="colleges.html">Colleges</a>
+    <a href="locations.html">Locations</a><a href="clubs.html">Clubs</a>
+    <a href="jobs.html">Jobs</a><a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html" class="active">Mystery Board</a>
+    <a href="documents.html">Documents</a><a href="shared-notes.html">Notes</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a><a href="colleges.html">🏛️ Colleges</a>
+  <a href="locations.html">🗺️ Locations</a><a href="clubs.html">🎭 Clubs</a>
+  <a href="jobs.html">💼 Jobs</a><a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html" class="active">🔍 Mystery Board</a>
+  <a href="documents.html">📜 Documents</a><a href="shared-notes.html">📝 Notes</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-hero" style="margin-bottom:1.5rem;">
+      <div class="page-hero-label">Classified Investigation Files</div>
+      <h1>Mystery Board</h1>
+      <p>Track clues, suspects, theories, and open questions. This is your investigation workspace — add entries, update status, and connect the threads.</p>
+    </div>
+
+    <!-- Stats bar -->
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div class="mystery-stats">
+        <div class="mystery-stat">
+          <div class="mystery-stat-num" id="stat-open">—</div>
+          <div class="mystery-stat-label">Open</div>
+        </div>
+        <div class="mystery-stat">
+          <div class="mystery-stat-num" id="stat-solved">—</div>
+          <div class="mystery-stat-label">Solved</div>
+        </div>
+        <div class="mystery-stat">
+          <div class="mystery-stat-num" id="stat-total">—</div>
+          <div class="mystery-stat-label">Total Entries</div>
+        </div>
+      </div>
+      <button id="add-clue-btn" class="btn btn-primary">
+        + Add Entry
+      </button>
+    </div>
+
+    <!-- Category filters -->
+    <div class="filter-bar" style="margin-bottom:1.5rem;">
+      <div class="filter-group" role="group" aria-label="Filter by category">
+        <button class="filter-btn mystery-cat-btn active" data-cat="all">All</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Clue" style="color:var(--prismari-light);">🔵 Clue</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Rumor" style="color:var(--gold-light);">💬 Rumor</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Suspect" style="color:#f09090;">🎯 Suspect</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Location" style="color:var(--lorehold-light);">📍 Location</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Question" style="color:var(--silverquill-light);">❓ Question</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Theory" style="color:var(--witherbloom-light);">💡 Theory</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="Solved" style="color:var(--quandrix-light);">✅ Solved</button>
+        <button class="filter-btn mystery-cat-btn" data-cat="False Lead" style="color:var(--text-muted);">❌ False Lead</button>
+      </div>
+    </div>
+
+    <!-- The board -->
+    <div class="mystery-board">
+      <div id="mystery-grid" class="grid-auto" style="position:relative;z-index:1;" role="list" aria-label="Mystery board entries">
+        <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:3rem;">Loading investigation files...</div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;text-align:center;">
+      <p style="font-size:0.78rem;color:var(--text-muted);">
+        <span id="mystery-count">—</span> entries · All data saved in your browser ·
+        <button onclick="exportMysteries()" class="btn btn-ghost btn-sm" style="font-size:0.75rem;">Export JSON</button>
+        <button onclick="importMysteries()" class="btn btn-ghost btn-sm" style="font-size:0.75rem;">Import JSON</button>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Strixhaven Student Portal · <a href="index.html">Home</a> · For Campaign Use Only</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initMysteryPage();
+  updateStats();
+});
+
+function updateStats() {
+  const saved = LS.get('mysteries', null);
+  fetchData('mysteries.json').then(defaults => {
+    const data = saved || defaults;
+    const open = data.filter(c => c.status === 'Open').length;
+    const solved = data.filter(c => c.status === 'Solved').length;
+    document.getElementById('stat-open').textContent = open;
+    document.getElementById('stat-solved').textContent = solved;
+    document.getElementById('stat-total').textContent = data.length;
+  });
+}
+
+function exportMysteries() {
+  const data = LS.get('mysteries', []);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'strixhaven-mysteries.json'; a.click();
+  showToast('Mystery board exported!', 'success');
+}
+
+function importMysteries() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        LS.set('mysteries', data);
+        showToast('Mystery board imported!', 'success');
+        initMysteryPage();
+        updateStats();
+      } catch { showToast('Invalid JSON file.', 'error'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+</script>
+</body>
+</html>

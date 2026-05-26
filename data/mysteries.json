@@ -1,0 +1,46 @@
+[
+  {
+    "id": "mystery-001",
+    "title": "The Rhythm Beneath",
+    "category": "Clue",
+    "description": "Something strange is happening beneath the normal rhythm of student life. Not all magical incidents this term have obvious explanations.",
+    "connectedNPCs": [],
+    "connectedLocations": [],
+    "status": "Open",
+    "playerNotes": "",
+    "dateAdded": ""
+  },
+  {
+    "id": "mystery-002",
+    "title": "Magical Incidents — Connected?",
+    "category": "Question",
+    "description": "Several unrelated magical incidents have occurred this term. Coincidence? Or is there a pattern connecting them?",
+    "connectedNPCs": [],
+    "connectedLocations": [],
+    "status": "Open",
+    "playerNotes": "",
+    "dateAdded": ""
+  },
+  {
+    "id": "mystery-003",
+    "title": "Creature Behavior Changes",
+    "category": "Rumor",
+    "description": "Campus animals and magical creatures have been behaving strangely near certain parts of campus. Keep track of where and when.",
+    "connectedNPCs": [],
+    "connectedLocations": [],
+    "status": "Open",
+    "playerNotes": "",
+    "dateAdded": ""
+  },
+  {
+    "id": "mystery-004",
+    "title": "Strange Patterns in the Dark",
+    "category": "Clue",
+    "description": "Odd magical residue has been observed in places that shouldn't have it. It seems to follow a pattern — but what pattern?",
+    "connectedNPCs": [],
+    "connectedLocations": [],
+    "status": "Open",
+    "playerNotes": "",
+    "dateAdded": ""
+  }
+]
