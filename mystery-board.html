@@ -49,6 +49,7 @@
     <a href="documents.html">Documents</a><a href="shared-notes.html">Notes</a>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  <div id="nav-user"></div>
 </nav>
 <div class="mobile-menu">
   <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
@@ -128,27 +129,29 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/db.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+  await initAuth();
   await initMysteryPage();
   updateStats();
 });
 
-function updateStats() {
-  const saved = LS.get('mysteries', null);
-  fetchData('mysteries.json').then(defaults => {
-    const data = saved || defaults;
-    const open = data.filter(c => c.status === 'Open').length;
-    const solved = data.filter(c => c.status === 'Solved').length;
-    document.getElementById('stat-open').textContent = open;
-    document.getElementById('stat-solved').textContent = solved;
-    document.getElementById('stat-total').textContent = data.length;
-  });
+async function updateStats() {
+  const data = await getMysteries();
+  const open = data.filter(c => c.status === 'Open').length;
+  const solved = data.filter(c => c.status === 'Solved').length;
+  document.getElementById('stat-open').textContent = open;
+  document.getElementById('stat-solved').textContent = solved;
+  document.getElementById('stat-total').textContent = data.length;
 }
 
-function exportMysteries() {
-  const data = LS.get('mysteries', []);
+async function exportMysteries() {
+  const data = await getMysteries();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'strixhaven-mysteries.json'; a.click();
@@ -162,12 +165,12 @@ function importMysteries() {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = ev => {
+    reader.onload = async ev => {
       try {
         const data = JSON.parse(ev.target.result);
-        LS.set('mysteries', data);
+        await Promise.all(data.map(m => upsertMystery(m)));
         showToast('Mystery board imported!', 'success');
-        initMysteryPage();
+        await initMysteryPage();
         updateStats();
       } catch { showToast('Invalid JSON file.', 'error'); }
     };

@@ -20,6 +20,7 @@
     <a href="shared-notes.html" class="active">Notes</a>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  <div id="nav-user"></div>
 </nav>
 <div class="mobile-menu">
   <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
@@ -110,11 +111,15 @@ Feel free to use any format — bullet points, paragraphs, whatever works for yo
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/db.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  initNotesPage();
-  // Load saved Google Doc link
+document.addEventListener('DOMContentLoaded', async () => {
+  await initAuth();
+  await initNotesPage();
   const savedLink = LS.get('gdoc_link', null);
   if (savedLink) {
     document.getElementById('gdoc-link').value = savedLink;

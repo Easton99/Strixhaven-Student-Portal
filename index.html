@@ -27,6 +27,7 @@
     <a href="shared-notes.html" role="listitem">Notes</a>
   </div>
   <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+  <div id="nav-user"></div>
 </nav>
 
 <div class="mobile-menu" role="navigation" aria-label="Mobile navigation">
@@ -214,7 +215,16 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/db.js"></script>
 <script src="assets/js/main.js"></script>
-<script>initHomePage();</script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initAuth();
+  initHomePage();
+});
+</script>
 </body>
 </html>

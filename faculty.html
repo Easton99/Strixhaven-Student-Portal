@@ -20,6 +20,7 @@
     <a href="shared-notes.html">Notes</a>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  <div id="nav-user"></div>
 </nav>
 <div class="mobile-menu">
   <a href="index.html">🏠 Home</a><a href="students.html">👤 Students</a>
@@ -76,9 +77,14 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/db.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+  await initAuth();
   const faculty = await fetchData('faculty.json');
   let filtered = [...faculty];
   let activeCollege = 'all';

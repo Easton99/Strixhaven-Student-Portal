@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Strixhaven Student Portal</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-xl);
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg), var(--shadow-glow-magic);
+      position: relative;
+      overflow: hidden;
+    }
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: -40%; left: -20%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(120,100,200,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .login-emblem { font-size: 3.5rem; margin-bottom: 1rem; }
+    .login-title { font-size: 1.6rem; margin-bottom: 0.3rem; }
+    .login-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem; font-family: 'Crimson Pro', serif; }
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-glow);
+      background: var(--bg-panel);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+    .google-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 16px rgba(200,169,90,0.1);
+    }
+    .google-icon {
+      width: 20px; height: 20px;
+      background: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .login-footer { margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-muted); }
+    .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="sparkle-container" aria-hidden="true"></div>
+    <div class="login-emblem">🏛️</div>
+    <h1 class="login-title">Strixhaven Portal</h1>
+    <p class="login-sub">Please verify your student identity to access the portal.</p>
+
+    <button class="google-btn" id="google-signin-btn" onclick="signInWithGoogle()">
+      <div class="google-icon">
+        <svg width="14" height="14" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+          <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+          <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/>
+          <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.31z"/>
+        </svg>
+      </div>
+      Sign in with Google
+    </button>
+
+    <div class="divider"></div>
+    <p class="login-footer">
+      This portal is for campaign participants only.<br>
+      Sign in with the Google account associated with your player seat.
+    </p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    initSparkles();
+
+    // If already signed in, redirect home
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = 'index.html';
+    });
+
+    async function signInWithGoogle() {
+      const btn = document.getElementById('google-signin-btn');
+      btn.textContent = 'Redirecting to Google...';
+      btn.disabled = true;
+      const { error } = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: SITE_URL }
+      });
+      if (error) {
+        btn.textContent = 'Error — try again';
+        btn.disabled = false;
+        alert('Sign-in failed: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
