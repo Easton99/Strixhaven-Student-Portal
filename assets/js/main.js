@@ -69,6 +69,15 @@ function npcImageSrc(npc) {
   return null;
 }
 
+function openPortraitLightbox(src, name) {
+  const lb = document.createElement('div');
+  lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+  lb.innerHTML = `<img src="${src}" alt="${name}" style="max-height:90vh;max-width:90vw;border-radius:10px;box-shadow:0 0 60px rgba(0,0,0,0.9);">`;
+  lb.addEventListener('click', () => lb.remove());
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { lb.remove(); document.removeEventListener('keydown', esc); } });
+  document.body.appendChild(lb);
+}
+
 /* --- FETCH JSON DATA --- */
 async function fetchData(file) {
   try {
@@ -247,7 +256,7 @@ function npcCard(npc, relData = {}) {
   const isFav = savedRel.is_favorite || savedRel.isFavorite || false;
   const imgSrc = npcImageSrc(npc);
   const avatarHtml = imgSrc
-    ? `<div style="width:48px;height:60px;flex-shrink:0;border-radius:5px;overflow:hidden;border:1px solid var(--border);"><img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" alt="${npc.name}" loading="lazy"></div>`
+    ? `<div style="width:48px;height:60px;flex-shrink:0;border-radius:5px;overflow:hidden;border:1px solid var(--border);cursor:zoom-in;" onclick="event.stopPropagation();openPortraitLightbox('${imgSrc}','${npc.name}')"><img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" alt="${npc.name}" loading="lazy"></div>`
     : `<div class="card-avatar">${npc.emoji||'👤'}</div>`;
   return `
     <div class="card npc-card card-clickable" data-id="${npc.id}" data-college="${npc.college||''}" role="button" tabindex="0" aria-label="View ${npc.name}">
@@ -300,7 +309,7 @@ async function openNpcModal(npc, loadRel = true) {
 
   const imgSrc = npcImageSrc(npc);
   const modalAvatarHtml = imgSrc
-    ? `<div style="width:85px;flex-shrink:0;border-radius:8px;overflow:hidden;border:1px solid var(--border);"><img src="${imgSrc}" style="width:100%;display:block;" alt="${npc.name}" loading="lazy"></div>`
+    ? `<div style="width:85px;flex-shrink:0;border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:zoom-in;" onclick="openPortraitLightbox('${imgSrc}','${npc.name}')"><img src="${imgSrc}" style="width:100%;display:block;" alt="${npc.name}" loading="lazy"></div>`
     : `<div class="card-avatar" style="width:60px;height:60px;font-size:2rem;">${npc.emoji||'👤'}</div>`;
 
   openModal(`
