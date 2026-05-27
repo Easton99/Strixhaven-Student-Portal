@@ -12,25 +12,25 @@
     "image": "biblioplex.jpg",
     "map": "biblioplex-map.jpg",
     "mapAreas": [
-      { "key": "B1",  "name": "Main Entrance",                  "x": 47, "y": 91 },
-      { "key": "B2",  "name": "Biblioplex Lounge",              "x": 28, "y": 81 },
-      { "key": "B3",  "name": "Student Café Seating",           "x": 45, "y": 78 },
-      { "key": "B4",  "name": "Information Desk",               "x": 57, "y": 78 },
-      { "key": "B5",  "name": "Student Store",                  "x": 69, "y": 78 },
-      { "key": "B6",  "name": "Biblioplex Café",                "x": 36, "y": 78 },
-      { "key": "B7",  "name": "Lecture Hall",                   "x":  7, "y": 67 },
-      { "key": "B8",  "name": "Study Area",                     "x": 70, "y": 62 },
-      { "key": "B9",  "name": "Book Garden",                    "x": 13, "y": 72 },
-      { "key": "B10", "name": "Main Stacks",                    "x": 24, "y": 57 },
-      { "key": "B11", "name": "Hall of Oracles",                "x": 47, "y": 57 },
-      { "key": "B12", "name": "Student and Alumni Art Gallery", "x": 20, "y": 49 },
-      { "key": "B13", "name": "Amphitheater",                   "x": 47, "y": 49 },
-      { "key": "B14", "name": "Student Activities Center",      "x": 64, "y": 49 },
-      { "key": "B15", "name": "Student Council Hall",           "x": 82, "y": 49 },
-      { "key": "B16", "name": "Advanced Student Stacks",        "x": 23, "y": 18 },
-      { "key": "B17", "name": "Advanced Student Office",        "x": 32, "y": 22 },
-      { "key": "B18", "name": "Advanced Student Lounge",        "x": 11, "y": 28 },
-      { "key": "B19", "name": "The Compendium",                 "x": 73, "y": 23 }
+      { "key": "B1",  "name": "Main Entrance",                  "x": 47, "y": 91, "desc": "Enchanted marble steps lead up 5 feet to a small plaza at the Biblioplex's entrance. The double door's vertical handles are each carved in the likeness of a robed scholar. During the day, the doors stand open. At night, the doors are closed, locked, and sealed with an arcane lock spell." },
+      { "key": "B2",  "name": "Biblioplex Lounge",              "x": 28, "y": 81, "desc": "Luxurious couches and sturdy tables furnish this spacious area. Students, employees, and staff members often use this lounge to relax between shifts. Each table holds piles of magazines, newsletters, flyers, and nonmagical scrolls from around campus, including recruitment flyers from various Extracurriculars and 'Help Wanted' ads for campus jobs." },
+      { "key": "B3",  "name": "Student Café Seating",           "x": 45, "y": 78, "desc": "This area typically holds around twenty students, all of them studying, eating, chatting, or even sleeping. Many enjoy food and drinks from the nearby Biblioplex Café." },
+      { "key": "B4",  "name": "Information Desk",               "x": 57, "y": 78, "desc": "Three faculty-appointed reference librarians work at these circular desks. All are expert scholars and powerful mages. They can provide helpful instructions for finding any public location or collection in the Biblioplex." },
+      { "key": "B5",  "name": "Student Store",                  "x": 69, "y": 78, "desc": "This small shop is stocked with books, equipment, and gear useful as academic supplies. The store's manager is Groff Lundquist. Students can buy hats, scarves, tunics, robes, gloves, and Strixhaven-branded apparel. Costs range from 5 cp to 5 gp or more." },
+      { "key": "B6",  "name": "Biblioplex Café",                "x": 36, "y": 78, "desc": "One wall is covered with a mural made from a living tree's roots that move occasionally, making the place feel alive. The ceiling is covered in painted leaves that change color by season thanks to a permanent illusion effect. Up to ten students are typically present. Coffee and tea cost 1 cp per cup; the sandwich of the day varies." },
+      { "key": "B7",  "name": "Lecture Hall",                   "x":  7, "y": 67, "desc": "Each of these halls hosts interdisciplinary lectures for Strixhaven students. The seats magically grow or shrink to comfortably accommodate students of any size or body type. The halls' acoustics are magically enhanced to amplify the professor's lecture. While a class is in session, each hall holds a professor and up to thirty students." },
+      { "key": "B8",  "name": "Study Area",                     "x": 70, "y": 62, "desc": "These open study areas feature simple wooden tables and chairs. During the day, up to thirty students can typically be found here." },
+      { "key": "B9",  "name": "Book Garden",                    "x": 13, "y": 72, "desc": "In these quiet areas, students sit on the grass and study among lush foliage. Three awakened shrubs wandered in here last year and settled in each garden, and the university has welcomed them to stay. Members of Witherbloom College typically tend this space." },
+      { "key": "B10", "name": "Main Stacks",                    "x": 24, "y": 57, "desc": "Floor-to-ceiling bookshelves fill the center and east end of the library's first floor. The denser east stacks magically shift when students approach, creating space to stand single-file between them. These books are mostly introductory texts. Two cogwork archivists busily shelve returned or misfiled books in each area." },
+      { "key": "B11", "name": "Hall of Oracles",                "x": 47, "y": 57, "desc": "This hallowed hall is filled with statues of the university's past Oracles. At the center of the hall, a pulsing ball of magical energy — the Strixhaven Snarl — fills the area with bright light. This is the starting point for first-year student orientation." },
+      { "key": "B12", "name": "Student & Alumni Art Gallery",   "x": 20, "y": 49, "desc": "This crisp-looking room features white walls and columns that stretch from floor to ceiling, displaying art pieces representing various media. Three Prismari pledgemages tend this space. The Distinguished Society of Fine Artists often meets and holds discussions here." },
+      { "key": "B13", "name": "Amphitheater",                   "x": 47, "y": 49, "desc": "This impressive stage is used for lectures, assemblies, and as a gathering place in case of emergencies. Magic steps lead up to the stage from the library floor. Members of the Playactors Drama Guild often use this stage to meet and rehearse when the Rose Stage on Silverquill's campus is unavailable." },
+      { "key": "B14", "name": "Student Activities Center",      "x": 64, "y": 49, "desc": "This room is filled with tables and chairs and is available to any student organization registered with Strixhaven for use as a meeting place, rehearsal facility, or crafting site, or for other approved purposes." },
+      { "key": "B15", "name": "Student Council Hall",           "x": 82, "y": 49, "desc": "Filled with wooden tables and benches, this room has a flag displaying the Strixhaven star symbol on its back wall. Here, a student council publicly debates Strixhaven policies that most affect the student body. The council usually meets on the first day of every month." },
+      { "key": "B16", "name": "Advanced Student Stacks",        "x": 23, "y": 18, "desc": "This second-floor area can be accessed only with keys held by faculty members, or granted by reference librarians on a case-by-case basis. Students typically don't receive keys until studying for their final thesis during their fourth year. The arcane knowledge here is not public — and is sometimes dangerous. Two shield guardians patrol at all times." },
+      { "key": "B17", "name": "Advanced Student Office",        "x": 32, "y": 22, "desc": "These private offices are for students working on their theses, accessed using the same keys that allow access to the Advanced Student Stacks." },
+      { "key": "B18", "name": "Advanced Student Lounge",        "x": 11, "y": 28, "desc": "This rest area is designed to help stressed-out senior students unwind. Large tables are set up for gaming and shelves are filled with recreational reading material. The area can be accessed only through the Advanced Student Stacks." },
+      { "key": "B19", "name": "The Compendium",                 "x": 73, "y": 23, "desc": "This third-floor area holds copies of most of the mundane, widely available written works in the multiverse. The books are inscrutably cataloged, so it's almost impossible to find anything without help from a reference librarian. At the center stands a statue of a dragon that reads aloud the contents of most books placed in front of it." }
     ],
     "playerNotes": ""
   },
@@ -46,12 +46,12 @@
     "tags": ["central", "food/drink", "social", "popular"],
     "map": "firejolt-map.jpg",
     "mapAreas": [
-      { "key": "F1", "name": "Study Tables",    "x": 45, "y": 79 },
-      { "key": "F2", "name": "Seating Area",    "x": 50, "y": 58 },
-      { "key": "F3", "name": "Barista Station", "x": 46, "y": 40 },
-      { "key": "F4", "name": "Newsstand",       "x": 25, "y": 19 },
-      { "key": "F5", "name": "Fireside Lounge", "x": 57, "y": 18 },
-      { "key": "F6", "name": "Quiet Room",      "x": 78, "y": 21 }
+      { "key": "F1", "name": "Study Tables",    "x": 45, "y": 79, "desc": "These long benches sit atop two raised tiers with magic steps between them, affording easy access to the seating area below. Some thirty students are typically here during the day, studying quietly." },
+      { "key": "F2", "name": "Seating Area",    "x": 50, "y": 58, "desc": "This area is usually more crowded than the café's study tables. At least fifty students sit sociably in groups, chatting and having tea and coffee. The open spaces in the north part of this area are typically filled with students waiting to join the queue at the barista station or scouting for a good place to sit." },
+      { "key": "F3", "name": "Barista Station", "x": 46, "y": 40, "desc": "This bustling service counter is the demesne of Ellina Tanglewood, the Strixhaven employee who manages the café. The café strictly sells coffee and tea, but Ellina and the other talented baristas can make nearly any form of those drinks on request. A common coffee or tea costs 1 cp, while a more complicated order might cost 2 cp. The café's signature firejolt latte costs 10 gp and confers resistance to fire for 1 minute after drinking it." },
+      { "key": "F4", "name": "Newsstand",       "x": 25, "y": 19, "desc": "This small store inside Firejolt Café sells magazines, knickknacks, posters, stickers, and other decorative and leisure items. Most items here cost 1 cp, though higher-end items might be available." },
+      { "key": "F5", "name": "Fireside Lounge", "x": 57, "y": 18, "desc": "Much more comfortable than the café's other seating areas, this lounge is filled with sofas and armchairs where students can relax away from the hubbub. Fireplaces in the northern corners are lit by continual flame spells. Some twenty students are typically found here, using the tables to study quietly." },
+      { "key": "F6", "name": "Quiet Room",      "x": 78, "y": 21, "desc": "As with the fireside lounge, these rooms are quieter than the café's main seating areas. However, with large tables and more functional chairs, they're more oriented toward studying and completing classwork. Up to ten students are typically found in each of these rooms, engaged in quiet study." }
     ],
     "playerNotes": ""
   },
@@ -68,12 +68,12 @@
     "image": "bow-end-art.jpg",
     "map": "bow-end-map.jpg",
     "mapAreas": [
-      { "key": "E1", "name": "Patio Seating",         "x": 46, "y": 87 },
-      { "key": "E2", "name": "Main Dining Room",       "x": 43, "y": 67 },
-      { "key": "E3", "name": "Servers' Station & Bar", "x": 46, "y": 44 },
-      { "key": "E4", "name": "Overflow Seating",       "x": 17, "y": 33 },
-      { "key": "E5", "name": "Back Exit",              "x": 14, "y": 11 },
-      { "key": "E6", "name": "Kitchen",                "x": 33, "y": 17 }
+      { "key": "E1", "name": "Patio Seating",         "x": 46, "y": 87, "desc": "This outdoor seating area is fenced off and open to tavern customers and noncustomers alike. The patio doors and the front doors leading into the building are closed except when the tavern is open. Up to thirty-five students can typically be found here during opening hours, eating and chatting. At least two older student employees work here as servers." },
+      { "key": "E2", "name": "Main Dining Room",       "x": 43, "y": 67, "desc": "The most crowded area of the tavern is filled with students. In short order, student patrons shift the tables and chairs to accommodate hangouts, tavern games, and other shenanigans. Anywhere from fifty to seventy students are typically found here, eating, drinking, and socializing. At least four older student employees work here as servers." },
+      { "key": "E3", "name": "Servers' Station & Bar", "x": 46, "y": 44, "desc": "The server's station stands at the center of Bow's End Tavern, where up to four older student employees make drinks and pass orders to the kitchen. The tavern manager, Tulk 'The Bulk' Tusktooth, keeps an eye on this area. The food on offer includes caster's stew — a hearty bowl of venison, gravy, and root vegetables — and Curtie's Special, which rotates daily." },
+      { "key": "E4", "name": "Overflow Seating",       "x": 17, "y": 33, "desc": "The quietest part of the tavern, this seating area is where students go to escape the noise of the main dining room. From ten to twenty students are usually found here, relaxing or engaged in conversation. At least one older student employee can be found working here as a server." },
+      { "key": "E5", "name": "Back Exit",              "x": 14, "y": 11, "desc": "These areas afford access to the small stalls that serve as privies for the tavern, and each features a door leading to the tavern's back lot. Marked 'Staff Only' but unlocked during operating hours, they also act as loading areas for receiving supplies throughout the night." },
+      { "key": "E6", "name": "Kitchen",                "x": 33, "y": 17, "desc": "The tavern's food orders are prepared in this large kitchen, overseen by Chef Curtie Axechucker. The most prominent features are the cooking cauldrons along the north wall, which are always bubbling with strange and wonderful concoctions. A small break room is in the northwest corner, while a pantry takes up much of the east wall." }
     ],
     "playerNotes": ""
   },
@@ -90,13 +90,13 @@
     "image": "rose-stage-art.jpg",
     "map": "rose-stage-map.jpg",
     "mapAreas": [
-      { "key": "R1", "name": "General Seating",    "x": 49, "y": 91 },
-      { "key": "R2", "name": "Orchestra Pit",      "x": 11, "y": 71 },
-      { "key": "R3", "name": "Main Stage",         "x": 70, "y": 51 },
-      { "key": "R4", "name": "Backstage Doors",    "x": 46, "y": 22 },
-      { "key": "R5", "name": "Rose Room",          "x": 32, "y": 18 },
-      { "key": "R6", "name": "Storage Hall",       "x": 20, "y": 11 },
-      { "key": "R7", "name": "Stage Storage Area", "x":  8, "y": 17 }
+      { "key": "R1", "name": "General Seating",    "x": 49, "y": 91, "desc": "This area contains rows of benches, magically treated to resist the elements, with low-sloping ramps set between them. During the festival, some fifty students can be found here, sitting, chatting, and watching the performances." },
+      { "key": "R2", "name": "Orchestra Pit",      "x": 11, "y": 71, "desc": "This sunken area is reserved for student or professional musicians who accompany productions or provide ambient music. During the Rose Stage Festival, members of the Strixhaven Show Band Association hand out kazoos from this spot to any spectators who wish to accompany the improvised performances." },
+      { "key": "R3", "name": "Main Stage",         "x": 70, "y": 51, "desc": "This impressively large oval stage has ample room for performers, props, and set pieces. A wide set of magic steps rises 5 feet to the stage; sections are enchanted to move and reshape for full accessibility. Pillars to the east and west are used by production groups to rig backdrops and other set pieces." },
+      { "key": "R4", "name": "Backstage Doors",    "x": 46, "y": 22, "desc": "When regular plays are being performed, these doors open to an area where student performers wait for their cues before discreetly ascending to the main stage. During the festival, this area is empty. The doors are locked at night; Playactors Drama Guild members have a key, or the lock can be picked (DC 25 Dexterity)." },
+      { "key": "R5", "name": "Rose Room",          "x": 32, "y": 18, "desc": "Normally used for performers to dress, apply makeup, and make other preparations before a show. This area is empty during the Rose Stage Festival." },
+      { "key": "R6", "name": "Storage Hall",       "x": 20, "y": 11, "desc": "These short hallways connect the main areas of the annex building to its two storage rooms." },
+      { "key": "R7", "name": "Stage Storage Area", "x":  8, "y": 17, "desc": "These areas hold props, equipment, and supplies used for the Rose Stage's productions. Most items are marked 'Property of the Playactors Drama Guild,' though a few items and boxes are unmarked. A thorough search (DC 15 Perception) reveals several valuable items in each storage area." }
     ],
     "playerNotes": ""
   },
@@ -224,13 +224,13 @@
     "image": "witherbloom-campus.jpg",
     "map": "sedgemoor-map.jpg",
     "mapAreas": [
-      { "key": "S1", "name": "Marsh Banks",        "x": 74, "y": 79 },
-      { "key": "S2", "name": "South Islet",        "x": 19, "y": 67 },
-      { "key": "S3", "name": "Central Islet",      "x": 47, "y": 52 },
-      { "key": "S4", "name": "South Research Shed","x": 34, "y": 58 },
-      { "key": "S5", "name": "North Research Shed","x": 45, "y": 30 },
-      { "key": "S6", "name": "East Islet",         "x": 74, "y": 33 },
-      { "key": "S7", "name": "Underwater Spring",  "x": 13, "y":  9 }
+      { "key": "S1", "name": "Marsh Banks",         "x": 74, "y": 79, "desc": "Beyond some scrubby bushes, the solid ground gives way to the muddy swamp. Rickety wooden docks jut into the water, but there are no rafts or boats nearby — all are currently in use by Witherbloom students on assignments farther out on the water. Characters must make their way into Sedgemoor on foot or by other means." },
+      { "key": "S2", "name": "South Islet",         "x": 19, "y": 67, "desc": "One of three islets where characters can collect spell components. Any character who ventures into the swamp on the west side of this islet stumbles into an area of quicksand." },
+      { "key": "S3", "name": "Central Islet",       "x": 47, "y": 52, "desc": "The largest islet in this part of the swamp, this landmass features two wooden research sheds with an ancient tree stump between them. Hiding behind the tree stump are two snarling worgs, drawn here by the strange magic in the area." },
+      { "key": "S4", "name": "South Research Shed", "x": 34, "y": 58, "desc": "One of two small research sheds on the central islet, this building holds supplies and equipment for Witherbloom students doing research in Sedgemoor. Moss and fungi harvesting kits can be found here. Each kit grants advantage on Intelligence (Nature) checks to harvest spell components." },
+      { "key": "S5", "name": "North Research Shed", "x": 45, "y": 30, "desc": "The second of two small research sheds serves as a gathering area for Witherbloom students and faculty when classes take place in the bayou." },
+      { "key": "S6", "name": "East Islet",          "x": 74, "y": 33, "desc": "One of three islets where characters can collect spell components for Professor Lang. A swarm of poisonous snakes nests on this island — it attacks when a character sets foot here, though the swarm disperses and flees if reduced to 5 hit points or fewer." },
+      { "key": "S7", "name": "Underwater Spring",   "x": 13, "y":  9, "desc": "A steady, burbling flow of water disturbs the surface of the swamp here. This underground spring is the source of the strange magical corruption spreading across campus. A giant scorpion, corrupted by eldritch balm, lurks here and attacks on sight." }
     ],
     "playerNotes": ""
   },
