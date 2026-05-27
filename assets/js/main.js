@@ -732,8 +732,12 @@ async function initLocationsPage() {
 
 function locationCard(loc) {
   const regionColors={Lorehold:'var(--lorehold)',Prismari:'var(--prismari)',Quandrix:'var(--quandrix)',Silverquill:'var(--silverquill)',Witherbloom:'var(--witherbloom)','Central Campus':'var(--gold)'};
+  const imgHtml = loc.image
+    ? `<div style="width:100%;height:160px;overflow:hidden;border-radius:var(--radius) var(--radius) 0 0;margin:-1.25rem -1.25rem 1rem -1.25rem;width:calc(100% + 2.5rem);"><img src="assets/images/locations/${loc.image}" alt="${loc.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+    : '';
   return `
     <div class="card location-card" data-id="${loc.id}" role="button" tabindex="0" style="cursor:pointer;">
+      ${imgHtml}
       <div class="location-region" style="color:${regionColors[loc.region]||'var(--text-muted)'};">${loc.region}</div>
       <div class="card-header" style="margin-bottom:0.5rem;">
         <div style="font-size:2rem;">${loc.emoji}</div>
@@ -750,7 +754,11 @@ async function openLocationModal(loc) {
   const key = 'loc_'+loc.id;
   const npcs=loc.commonNPCs?.map(n=>`<span class="tag">${n}</span>`).join('')||'';
   const activities=loc.activities?.map(a=>`<li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.3rem;">• ${a}</li>`).join('')||'';
+  const modalImgHtml = loc.image
+    ? `<div style="width:calc(100% + 3rem);margin:-1.5rem -1.5rem 1.25rem -1.5rem;height:220px;overflow:hidden;border-radius:var(--radius-xl) var(--radius-xl) 0 0;"><img src="assets/images/locations/${loc.image}" alt="${loc.name}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+    : '';
   openModal(`
+    ${modalImgHtml}
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
       <div style="font-size:2.5rem;">${loc.emoji}</div>
       <div>

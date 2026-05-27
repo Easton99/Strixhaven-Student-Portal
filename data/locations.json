@@ -9,6 +9,7 @@
     "commonNPCs": ["Javenesh Stoutclaw", "Larine Arneza", "Tilana Kapule", "Cadoras Damellawar"],
     "activities": ["Research and study", "Consulting restricted archives", "Group study sessions", "Borrowing magical texts", "Encountering animated reference constructs"],
     "tags": ["central", "study", "library", "social", "all-college"],
+    "image": "biblioplex.jpg",
     "playerNotes": ""
   },
   {
@@ -69,6 +70,7 @@
     "commonNPCs": ["Multiple — all colleges intersect here"],
     "activities": ["Between-class socializing", "Outdoor study", "Club recruiting", "Campus events", "People-watching"],
     "tags": ["central", "social", "all-college", "outdoor"],
+    "image": "central-campus.jpg",
     "playerNotes": ""
   },
   {
@@ -93,6 +95,7 @@
     "commonNPCs": ["Greta Gorunn", "Javenesh Stoutclaw", "Cadoras Damellawar"],
     "activities": ["Attending history lectures", "Spirit communication practice", "Campus excavations", "Ruin exploration"],
     "tags": ["lorehold", "study", "mystery", "ruins"],
+    "image": "lorehold-campus.jpg",
     "playerNotes": ""
   },
   {
@@ -105,6 +108,7 @@
     "commonNPCs": ["Aurora Luna Wynterstarr", "Mina Lee", "Quentillius Melentor", "Zanther Bowen"],
     "activities": ["Art studios", "Performance rehearsals", "Elemental display practice", "Creative workshops"],
     "tags": ["prismari", "performance", "art", "social"],
+    "image": "prismari-art.jpg",
     "playerNotes": ""
   },
   {
@@ -117,6 +121,7 @@
     "commonNPCs": ["Larine Arneza", "Nora Ann Wu", "Tilana Kapule", "Drazhomir Yavnak"],
     "activities": ["Advanced theory classes", "Fractal meditation gardens", "Theoretical study groups"],
     "tags": ["quandrix", "study", "abstract"],
+    "image": "quandrix-art.jpg",
     "playerNotes": ""
   },
   {
@@ -129,6 +134,7 @@
     "commonNPCs": ["Grayson Wildemere", "Rubina Larkingdale", "Shuvadri Glittermaw"],
     "activities": ["Debate practice", "Rhetorical magic workshops", "Composition seminars", "Poetry slams"],
     "tags": ["silverquill", "study", "debate", "social"],
+    "image": "silverquill-campus.jpg",
     "playerNotes": ""
   },
   {
@@ -141,6 +147,7 @@
     "commonNPCs": ["Melwythorne", "Rosie Wuzfeddlims", "Urzmaktok Grojsh"],
     "activities": ["Herbalism labs", "Bog foraging", "Life/death magic practice", "Cauldron work"],
     "tags": ["witherbloom", "study", "nature", "gothic"],
+    "image": "witherbloom-campus.jpg",
     "playerNotes": ""
   },
   {
@@ -153,6 +160,7 @@
     "commonNPCs": ["Melwythorne", "Rosie Wuzfeddlims"],
     "activities": ["Ingredient foraging", "Field biology studies", "Specimen collection", "Quiet contemplation"],
     "tags": ["witherbloom", "outdoor", "mystery", "nature", "foraging"],
+    "image": "witherbloom-campus.jpg",
     "playerNotes": ""
   },
   {
