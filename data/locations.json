@@ -12,25 +12,25 @@
     "image": "biblioplex.jpg",
     "map": "biblioplex-map.jpg",
     "mapAreas": [
-      { "key": "B1", "name": "Main Entrance" },
-      { "key": "B2", "name": "Biblioplex Lounge" },
-      { "key": "B3", "name": "Student Café Seating" },
-      { "key": "B4", "name": "Information Desk" },
-      { "key": "B5", "name": "Student Store" },
-      { "key": "B6", "name": "Biblioplex Café" },
-      { "key": "B7", "name": "Lecture Hall" },
-      { "key": "B8", "name": "Study Area" },
-      { "key": "B9", "name": "Book Garden" },
-      { "key": "B10", "name": "Main Stacks" },
-      { "key": "B11", "name": "Hall of Oracles" },
-      { "key": "B12", "name": "Student and Alumni Art Gallery" },
-      { "key": "B13", "name": "Amphitheater" },
-      { "key": "B14", "name": "Student Activities Center" },
-      { "key": "B15", "name": "Student Council Hall" },
-      { "key": "B16", "name": "Advanced Student Stacks" },
-      { "key": "B17", "name": "Advanced Student Office" },
-      { "key": "B18", "name": "Advanced Student Lounge" },
-      { "key": "B19", "name": "The Compendium" }
+      { "key": "B1",  "name": "Main Entrance",                  "x": 47, "y": 91 },
+      { "key": "B2",  "name": "Biblioplex Lounge",              "x": 28, "y": 81 },
+      { "key": "B3",  "name": "Student Café Seating",           "x": 45, "y": 78 },
+      { "key": "B4",  "name": "Information Desk",               "x": 57, "y": 78 },
+      { "key": "B5",  "name": "Student Store",                  "x": 69, "y": 78 },
+      { "key": "B6",  "name": "Biblioplex Café",                "x": 36, "y": 78 },
+      { "key": "B7",  "name": "Lecture Hall",                   "x":  7, "y": 67 },
+      { "key": "B8",  "name": "Study Area",                     "x": 70, "y": 62 },
+      { "key": "B9",  "name": "Book Garden",                    "x": 13, "y": 72 },
+      { "key": "B10", "name": "Main Stacks",                    "x": 24, "y": 57 },
+      { "key": "B11", "name": "Hall of Oracles",                "x": 47, "y": 57 },
+      { "key": "B12", "name": "Student and Alumni Art Gallery", "x": 20, "y": 49 },
+      { "key": "B13", "name": "Amphitheater",                   "x": 47, "y": 49 },
+      { "key": "B14", "name": "Student Activities Center",      "x": 64, "y": 49 },
+      { "key": "B15", "name": "Student Council Hall",           "x": 82, "y": 49 },
+      { "key": "B16", "name": "Advanced Student Stacks",        "x": 23, "y": 18 },
+      { "key": "B17", "name": "Advanced Student Office",        "x": 32, "y": 22 },
+      { "key": "B18", "name": "Advanced Student Lounge",        "x": 11, "y": 28 },
+      { "key": "B19", "name": "The Compendium",                 "x": 73, "y": 23 }
     ],
     "playerNotes": ""
   },
@@ -46,12 +46,12 @@
     "tags": ["central", "food/drink", "social", "popular"],
     "map": "firejolt-map.jpg",
     "mapAreas": [
-      { "key": "F1", "name": "Study Tables" },
-      { "key": "F2", "name": "Seating Area" },
-      { "key": "F3", "name": "Barista Station" },
-      { "key": "F4", "name": "Newsstand" },
-      { "key": "F5", "name": "Fireside Lounge" },
-      { "key": "F6", "name": "Quiet Room" }
+      { "key": "F1", "name": "Study Tables",    "x": 45, "y": 79 },
+      { "key": "F2", "name": "Seating Area",    "x": 50, "y": 58 },
+      { "key": "F3", "name": "Barista Station", "x": 46, "y": 40 },
+      { "key": "F4", "name": "Newsstand",       "x": 25, "y": 19 },
+      { "key": "F5", "name": "Fireside Lounge", "x": 57, "y": 18 },
+      { "key": "F6", "name": "Quiet Room",      "x": 78, "y": 21 }
     ],
     "playerNotes": ""
   },
@@ -68,12 +68,12 @@
     "image": "bow-end-art.jpg",
     "map": "bow-end-map.jpg",
     "mapAreas": [
-      { "key": "E1", "name": "Patio Seating" },
-      { "key": "E2", "name": "Main Dining Room" },
-      { "key": "E3", "name": "Servers' Station and Bar" },
-      { "key": "E4", "name": "Overflow Seating" },
-      { "key": "E5", "name": "Back Exit" },
-      { "key": "E6", "name": "Kitchen" }
+      { "key": "E1", "name": "Patio Seating",         "x": 46, "y": 87 },
+      { "key": "E2", "name": "Main Dining Room",       "x": 43, "y": 67 },
+      { "key": "E3", "name": "Servers' Station & Bar", "x": 46, "y": 44 },
+      { "key": "E4", "name": "Overflow Seating",       "x": 17, "y": 33 },
+      { "key": "E5", "name": "Back Exit",              "x": 14, "y": 11 },
+      { "key": "E6", "name": "Kitchen",                "x": 33, "y": 17 }
     ],
     "playerNotes": ""
   },
@@ -90,13 +90,13 @@
     "image": "rose-stage-art.jpg",
     "map": "rose-stage-map.jpg",
     "mapAreas": [
-      { "key": "R1", "name": "General Seating" },
-      { "key": "R2", "name": "Orchestra Pit" },
-      { "key": "R3", "name": "Main Stage" },
-      { "key": "R4", "name": "Backstage Doors" },
-      { "key": "R5", "name": "Rose Room" },
-      { "key": "R6", "name": "Storage Hall" },
-      { "key": "R7", "name": "Stage Storage Area" }
+      { "key": "R1", "name": "General Seating",    "x": 49, "y": 91 },
+      { "key": "R2", "name": "Orchestra Pit",      "x": 11, "y": 71 },
+      { "key": "R3", "name": "Main Stage",         "x": 70, "y": 51 },
+      { "key": "R4", "name": "Backstage Doors",    "x": 46, "y": 22 },
+      { "key": "R5", "name": "Rose Room",          "x": 32, "y": 18 },
+      { "key": "R6", "name": "Storage Hall",       "x": 20, "y": 11 },
+      { "key": "R7", "name": "Stage Storage Area", "x":  8, "y": 17 }
     ],
     "playerNotes": ""
   },
@@ -224,13 +224,13 @@
     "image": "witherbloom-campus.jpg",
     "map": "sedgemoor-map.jpg",
     "mapAreas": [
-      { "key": "S1", "name": "Marsh Banks" },
-      { "key": "S2", "name": "South Islet" },
-      { "key": "S3", "name": "Central Islet" },
-      { "key": "S4", "name": "South Research Shed" },
-      { "key": "S5", "name": "North Research Shed" },
-      { "key": "S6", "name": "East Islet" },
-      { "key": "S7", "name": "Underwater Spring" }
+      { "key": "S1", "name": "Marsh Banks",        "x": 74, "y": 79 },
+      { "key": "S2", "name": "South Islet",        "x": 19, "y": 67 },
+      { "key": "S3", "name": "Central Islet",      "x": 47, "y": 52 },
+      { "key": "S4", "name": "South Research Shed","x": 34, "y": 58 },
+      { "key": "S5", "name": "North Research Shed","x": 45, "y": 30 },
+      { "key": "S6", "name": "East Islet",         "x": 74, "y": 33 },
+      { "key": "S7", "name": "Underwater Spring",  "x": 13, "y":  9 }
     ],
     "playerNotes": ""
   },

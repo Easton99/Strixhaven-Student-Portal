@@ -758,6 +758,14 @@ async function openLocationModal(loc) {
   const modalImgHtml = modalImgSrc
     ? `<div style="width:calc(100% + 3rem);margin:-1.5rem -1.5rem 1.25rem -1.5rem;height:220px;overflow:hidden;border-radius:var(--radius-xl) var(--radius-xl) 0 0;"><img src="assets/images/locations/${modalImgSrc}" alt="${loc.name}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
     : '';
+  let mapHtml = '';
+  if (loc.map) {
+    const hotspots = (loc.mapAreas||[]).filter(a=>a.x!=null).map(a=>{
+      const tipPos = a.y > 18 ? 'bottom:calc(100% + 5px);top:auto' : 'top:calc(100% + 5px);bottom:auto';
+      return `<div style="position:absolute;left:${a.x}%;top:${a.y}%;transform:translate(-50%,-50%);width:22px;height:22px;background:rgba(155,105,25,0.88);border-radius:50%;border:1.5px solid rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;font-size:0.5rem;font-weight:700;color:#fff;cursor:default;z-index:5;line-height:1;transition:transform 0.1s,background 0.1s;" onmouseenter="this.style.background='rgba(210,160,50,0.95)';this.style.transform='translate(-50%,-50%) scale(1.3)';this.querySelector('span').style.opacity='1'" onmouseleave="this.style.background='rgba(155,105,25,0.88)';this.style.transform='translate(-50%,-50%)';this.querySelector('span').style.opacity='0'">${a.key}<span style="position:absolute;${tipPos};left:50%;transform:translateX(-50%);background:rgba(15,10,5,0.93);color:#f5edd6;padding:3px 8px;border-radius:4px;font-size:0.68rem;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.15s;font-weight:400;z-index:10;border:1px solid rgba(255,255,255,0.12);">${a.key}: ${a.name}</span></div>`;
+    }).join('');
+    mapHtml = `<div style="margin-bottom:1rem;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">📍 Campus Map</div><div style="position:relative;display:block;"><img src="assets/images/locations/${loc.map}" alt="${loc.name} campus map" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;">${hotspots}</div></div>`;
+  }
   openModal(`
     ${modalImgHtml}
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
@@ -772,7 +780,7 @@ async function openLocationModal(loc) {
       <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">Common Faces</div><div style="display:flex;flex-wrap:wrap;gap:0.3rem;">${npcs}</div></div>
       <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">Activities</div><ul style="list-style:none;">${activities}</ul></div>
     </div>
-    ${loc.map ? `<div style="margin-bottom:1rem;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">📍 Campus Map</div><img src="assets/images/locations/${loc.map}" alt="${loc.name} campus map" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;">${loc.mapAreas?.length ? `<div style="margin-top:0.6rem;display:grid;grid-template-columns:repeat(2,1fr);gap:0.2rem 1.2rem;">${loc.mapAreas.map(a=>`<div style="font-size:0.78rem;color:var(--text-secondary);"><span style="font-family:monospace;font-weight:700;color:var(--text-primary);margin-right:0.4rem;">${a.key}</span>${a.name}</div>`).join('')}</div>` : ''}</div>` : ''}
+    ${mapHtml}
     <div style="border-top:1px solid var(--border);padding-top:1rem;">
       <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Your Notes</label>
       <textarea id="loc-notes" style="width:100%;height:80px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.75rem;color:var(--text-primary);font-family:'Crimson Pro',serif;font-size:0.95rem;resize:vertical;outline:none;">${saved[key]||''}</textarea>
