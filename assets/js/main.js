@@ -754,8 +754,9 @@ async function openLocationModal(loc) {
   const key = 'loc_'+loc.id;
   const npcs=loc.commonNPCs?.map(n=>`<span class="tag">${n}</span>`).join('')||'';
   const activities=loc.activities?.map(a=>`<li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.3rem;">• ${a}</li>`).join('')||'';
-  const modalImgHtml = loc.image
-    ? `<div style="width:calc(100% + 3rem);margin:-1.5rem -1.5rem 1.25rem -1.5rem;height:220px;overflow:hidden;border-radius:var(--radius-xl) var(--radius-xl) 0 0;"><img src="assets/images/locations/${loc.image}" alt="${loc.name}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+  const modalImgSrc = loc.image && loc.image !== loc.map ? loc.image : null;
+  const modalImgHtml = modalImgSrc
+    ? `<div style="width:calc(100% + 3rem);margin:-1.5rem -1.5rem 1.25rem -1.5rem;height:220px;overflow:hidden;border-radius:var(--radius-xl) var(--radius-xl) 0 0;"><img src="assets/images/locations/${modalImgSrc}" alt="${loc.name}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
     : '';
   openModal(`
     ${modalImgHtml}
@@ -771,7 +772,7 @@ async function openLocationModal(loc) {
       <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">Common Faces</div><div style="display:flex;flex-wrap:wrap;gap:0.3rem;">${npcs}</div></div>
       <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">Activities</div><ul style="list-style:none;">${activities}</ul></div>
     </div>
-    ${loc.map && loc.map !== loc.image ? `<div style="margin-bottom:1rem;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">📍 Campus Map</div><img src="assets/images/locations/${loc.map}" alt="${loc.name} map" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;"></div>` : ''}
+    ${loc.map ? `<div style="margin-bottom:1rem;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">📍 Campus Map</div><img src="assets/images/locations/${loc.map}" alt="${loc.name} campus map" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;"></div>` : ''}
     <div style="border-top:1px solid var(--border);padding-top:1rem;">
       <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:0.5rem;">Your Notes</label>
       <textarea id="loc-notes" style="width:100%;height:80px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.75rem;color:var(--text-primary);font-family:'Crimson Pro',serif;font-size:0.95rem;resize:vertical;outline:none;">${saved[key]||''}</textarea>

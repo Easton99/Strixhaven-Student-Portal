@@ -52,7 +52,7 @@
     "activities": ["Watching performances", "Performing in shows", "Club showcases", "Tryouts and auditions", "Open mic nights"],
     "tags": ["central", "performance", "prismari", "social", "club"],
     "image": "central-campus_b.jpg",
-    "map": "central-campus_b.jpg",
+    "map": "silverquill-map.jpg",
     "playerNotes": ""
   },
   {
@@ -150,6 +150,7 @@
     "activities": ["Debate practice", "Rhetorical magic workshops", "Composition seminars", "Poetry slams"],
     "tags": ["silverquill", "study", "debate", "social"],
     "image": "silverquill-campus.jpg",
+    "map": "silverquill-map.jpg",
     "playerNotes": ""
   },
   {
@@ -163,7 +164,7 @@
     "activities": ["Herbalism labs", "Bog foraging", "Life/death magic practice", "Cauldron work"],
     "tags": ["witherbloom", "study", "nature", "gothic"],
     "image": "witherbloom-campus.jpg",
-    "map": "witherbloom-map.jpg",
+    "map": "sedgemoor.jpg",
     "playerNotes": ""
   },
   {
