@@ -10,6 +10,7 @@
     "activities": ["Research and study", "Consulting restricted archives", "Group study sessions", "Borrowing magical texts", "Encountering animated reference constructs"],
     "tags": ["central", "study", "library", "social", "all-college"],
     "image": "biblioplex.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -22,6 +23,8 @@
     "commonNPCs": ["Mina Lee", "Zanther Bowen", "Aurora Luna Wynterstarr"],
     "activities": ["Coffee and socializing", "Impromptu study dates", "Overhearing campus gossip", "Trying the new seasonal drinks"],
     "tags": ["central", "food/drink", "social", "popular"],
+    "image": "central-campus_b.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -34,6 +37,8 @@
     "commonNPCs": ["Greta Gorunn", "Grayson Wildemere", "Quentillius Melentor"],
     "activities": ["Dinner and drinks", "Late-night debates", "Arm wrestling", "Unofficial club meetings", "Celebrating exam results"],
     "tags": ["central", "food/drink", "social", "evening", "gathering"],
+    "image": "central-campus_b.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -46,6 +51,8 @@
     "commonNPCs": ["Aurora Luna Wynterstarr", "Zanther Bowen", "Quentillius Melentor", "Mina Lee"],
     "activities": ["Watching performances", "Performing in shows", "Club showcases", "Tryouts and auditions", "Open mic nights"],
     "tags": ["central", "performance", "prismari", "social", "club"],
+    "image": "central-campus_b.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -58,6 +65,8 @@
     "commonNPCs": ["Zanther Bowen", "Greta Gorunn", "Rubina Larkingdale"],
     "activities": ["Watching Mage Tower games", "Intramural events", "Cheering squad performances", "Club showcases"],
     "tags": ["central", "sports", "club", "social", "competitive"],
+    "image": "central-campus_b.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -71,6 +80,7 @@
     "activities": ["Between-class socializing", "Outdoor study", "Club recruiting", "Campus events", "People-watching"],
     "tags": ["central", "social", "all-college", "outdoor"],
     "image": "central-campus.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -83,6 +93,8 @@
     "commonNPCs": ["Rotating cast of first-year students"],
     "activities": ["Late-night conversations", "Study groups", "Minor magical accidents", "Making friends and rivals"],
     "tags": ["central", "social", "residential", "first-year"],
+    "image": "central-campus_b.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   },
   {
@@ -96,6 +108,7 @@
     "activities": ["Attending history lectures", "Spirit communication practice", "Campus excavations", "Ruin exploration"],
     "tags": ["lorehold", "study", "mystery", "ruins"],
     "image": "lorehold-campus.jpg",
+    "map": "lorehold-map.jpg",
     "playerNotes": ""
   },
   {
@@ -109,6 +122,7 @@
     "activities": ["Art studios", "Performance rehearsals", "Elemental display practice", "Creative workshops"],
     "tags": ["prismari", "performance", "art", "social"],
     "image": "prismari-art.jpg",
+    "map": "prismari-campus.jpg",
     "playerNotes": ""
   },
   {
@@ -122,6 +136,7 @@
     "activities": ["Advanced theory classes", "Fractal meditation gardens", "Theoretical study groups"],
     "tags": ["quandrix", "study", "abstract"],
     "image": "quandrix-art.jpg",
+    "map": "quandrix-campus.jpg",
     "playerNotes": ""
   },
   {
@@ -148,6 +163,7 @@
     "activities": ["Herbalism labs", "Bog foraging", "Life/death magic practice", "Cauldron work"],
     "tags": ["witherbloom", "study", "nature", "gothic"],
     "image": "witherbloom-campus.jpg",
+    "map": "witherbloom-map.jpg",
     "playerNotes": ""
   },
   {
@@ -161,6 +177,7 @@
     "activities": ["Ingredient foraging", "Field biology studies", "Specimen collection", "Quiet contemplation"],
     "tags": ["witherbloom", "outdoor", "mystery", "nature", "foraging"],
     "image": "witherbloom-campus.jpg",
+    "map": "sedgemoor.jpg",
     "playerNotes": ""
   },
   {
@@ -173,6 +190,8 @@
     "commonNPCs": ["Various — popular student gathering spot"],
     "activities": ["Shopping for supplies", "Browsing curiosities", "Picking up ordered components"],
     "tags": ["central", "job", "practical"],
+    "image": "central-campus_b.jpg",
+    "map": "central-campus_b.jpg",
     "playerNotes": ""
   }
 ]
