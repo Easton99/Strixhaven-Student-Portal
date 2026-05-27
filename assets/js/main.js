@@ -63,6 +63,12 @@ function relStatusBadge(status) {
   return `<span class="badge ${map[status]||'rel-unknown'}">${status||'Unknown'}</span>`;
 }
 
+function npcImageSrc(npc) {
+  if (npc.image) return `assets/images/${npc.image}`;
+  if (npc.type === 'student') return `assets/images/students/${npc.id}.jpg`;
+  return null;
+}
+
 /* --- FETCH JSON DATA --- */
 async function fetchData(file) {
   try {
@@ -239,10 +245,14 @@ function npcCard(npc, relData = {}) {
   const savedRel = relData[npc.id] || {};
   const relStatus = savedRel.status || npc.relationshipStatus || 'Unknown';
   const isFav = savedRel.is_favorite || savedRel.isFavorite || false;
+  const imgSrc = npcImageSrc(npc);
+  const avatarHtml = imgSrc
+    ? `<div style="width:48px;height:60px;flex-shrink:0;border-radius:5px;overflow:hidden;border:1px solid var(--border);"><img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" alt="${npc.name}" loading="lazy"></div>`
+    : `<div class="card-avatar">${npc.emoji||'👤'}</div>`;
   return `
     <div class="card npc-card card-clickable" data-id="${npc.id}" data-college="${npc.college||''}" role="button" tabindex="0" aria-label="View ${npc.name}">
       <div class="card-header">
-        <div class="card-avatar">${npc.emoji||'👤'}</div>
+        ${avatarHtml}
         <div>
           <div class="card-title">${npc.name}${isFav?'<span style="color:var(--gold);margin-left:0.3rem;font-size:0.85rem;">★</span>':''}</div>
           <div class="card-subtitle">${npc.race||''} ${npc.role?'· '+npc.role:''}</div>
@@ -288,9 +298,14 @@ async function openNpcModal(npc, loadRel = true) {
   const rumorHtml = npc.rumors ? revealField(npc.id, 'rumors', 'Campus Whisper', npc.rumors, '💬') : '';
   const gossipHtml = npc.gossip ? revealField(npc.id, 'gossip', 'Gossip', npc.gossip, '🗣️') : '';
 
+  const imgSrc = npcImageSrc(npc);
+  const modalAvatarHtml = imgSrc
+    ? `<div style="width:85px;flex-shrink:0;border-radius:8px;overflow:hidden;border:1px solid var(--border);"><img src="${imgSrc}" style="width:100%;display:block;" alt="${npc.name}" loading="lazy"></div>`
+    : `<div class="card-avatar" style="width:60px;height:60px;font-size:2rem;">${npc.emoji||'👤'}</div>`;
+
   openModal(`
     <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.25rem;">
-      <div class="card-avatar" style="width:60px;height:60px;font-size:2rem;">${npc.emoji||'👤'}</div>
+      ${modalAvatarHtml}
       <div>
         <h2 style="font-size:1.3rem;margin-bottom:0.25rem;">${npc.name}</h2>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.3rem;">
