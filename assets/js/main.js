@@ -201,6 +201,12 @@ async function initStudentsPage() {
 
 async function _renderNpcGrid(gridId, countId, all, initialFiltered, opts = {}) {
   const relData = await getPlayerRelationships();
+  await loadReveals();
+  const dm = typeof isDM === 'function' && isDM();
+  if (!dm) {
+    all = all.filter(npc => !isHidden('npc', npc.id));
+    initialFiltered = initialFiltered.filter(npc => !isHidden('npc', npc.id));
+  }
   let filtered = [...initialFiltered];
   let activeCollege = 'all', activeType = 'all', searchQuery = '';
   const grid = document.getElementById(gridId);
@@ -255,11 +261,20 @@ function npcCard(npc, relData = {}) {
   const relStatus = savedRel.status || npc.relationshipStatus || 'Unknown';
   const isFav = savedRel.is_favorite || savedRel.isFavorite || false;
   const imgSrc = npcImageSrc(npc);
+  const hidden = isHidden('npc', npc.id);
   const avatarHtml = imgSrc
     ? `<div style="width:48px;height:60px;flex-shrink:0;border-radius:5px;overflow:hidden;border:1px solid var(--border);cursor:zoom-in;" onclick="event.stopPropagation();openPortraitLightbox('${imgSrc}','${npc.name}')"><img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;object-position:top center;" alt="${npc.name}" loading="lazy"></div>`
     : `<div class="card-avatar">${npc.emoji||'👤'}</div>`;
+  const dmRow = (typeof isDM === 'function' && isDM()) ? `
+    <div style="border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.4rem;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:0.62rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;">DM</span>
+      <button onclick="event.stopPropagation();dmToggleNpc('${npc.id}',this)"
+        style="font-size:0.68rem;padding:2px 8px;border-radius:4px;border:1px solid;cursor:pointer;background:transparent;transition:all 0.15s;${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
+        ${hidden ? '🔴 Hidden' : '👁 Visible'}
+      </button>
+    </div>` : '';
   return `
-    <div class="card npc-card card-clickable" data-id="${npc.id}" data-college="${npc.college||''}" role="button" tabindex="0" aria-label="View ${npc.name}">
+    <div class="card npc-card card-clickable${hidden?' dm-hidden-card':''}" data-id="${npc.id}" data-college="${npc.college||''}" role="button" tabindex="0" aria-label="View ${npc.name}" style="${hidden?'opacity:0.55;outline:1px dashed rgba(224,112,112,0.35);':''}">
       <div class="card-header">
         ${avatarHtml}
         <div>
@@ -275,7 +290,21 @@ function npcCard(npc, relData = {}) {
         ${relStatusBadge(relStatus)}
         ${npc.type==='faculty'?'<span class="badge badge-gold">Faculty</span>':''}
       </div>
+      ${dmRow}
     </div>`;
+}
+
+async function dmToggleNpc(id, btn) {
+  const nowHidden = await toggleHidden('npc', id);
+  if (nowHidden === null) return;
+  btn.textContent = nowHidden ? '🔴 Hidden' : '👁 Visible';
+  btn.style.color = nowHidden ? '#e07070' : 'var(--text-muted)';
+  btn.style.borderColor = nowHidden ? 'rgba(224,112,112,0.4)' : 'var(--border)';
+  const card = btn.closest('.npc-card');
+  if (card) {
+    card.style.opacity = nowHidden ? '0.55' : '';
+    card.style.outline = nowHidden ? '1px dashed rgba(224,112,112,0.35)' : '';
+  }
 }
 
 async function openNpcModal(npc, loadRel = true) {
@@ -359,6 +388,15 @@ async function saveNpcRelationship(id) {
   const bondScore = parseInt(document.getElementById('modal-bond-score')?.value || '0');
   const notes = document.getElementById('modal-notes')?.value || '';
   const existing = (await getPlayerRelationships())[id] || {};
+  const npcName = window._lastModalNpc?.name || id;
+
+  if ((existing.status || 'Unknown') !== status)
+    await logActivity('rel_status', 'npc', id, npcName, existing.status || 'Unknown', status);
+  if ((existing.bond_score ?? 0) !== bondScore)
+    await logActivity('bond_score', 'npc', id, npcName, String(existing.bond_score ?? 0), String(bondScore));
+  if ((existing.notes || '') !== notes && notes.trim())
+    await logActivity('note_updated', 'npc', id, npcName, null, null);
+
   await savePlayerRelationship(id, { status, bond_score: bondScore, notes, is_favorite: existing.is_favorite || false });
   showToast('Relationship saved!', 'success');
   closeModal();
@@ -368,7 +406,9 @@ async function toggleFavoriteFromModal(id) {
   const allRel = await getPlayerRelationships();
   const existing = allRel[id] || {};
   const newFav = !existing.is_favorite;
+  const npcName = window._lastModalNpc?.name || id;
   await savePlayerRelationship(id, { ...existing, is_favorite: newFav });
+  await logActivity(newFav ? 'favorited' : 'unfavorited', 'npc', id, npcName, null, null);
   const btn = document.getElementById('modal-fav-btn');
   if (btn) btn.classList.toggle('active', newFav);
 }
@@ -721,24 +761,27 @@ function openCollegeModal(c) {
    PAGE: LOCATIONS
    ============================================================ */
 async function initLocationsPage() {
-  const locations = await fetchData('locations.json');
-  let filtered=[...locations], activeTag='all', searchQuery='';
+  await loadReveals();
+  const dm = typeof isDM === 'function' && isDM();
+  let allLocs = await fetchData('locations.json');
+  let filtered=[], activeTag='all', searchQuery='';
   const grid=document.getElementById('locations-grid'), count=document.getElementById('loc-count');
 
   function render() {
     if (!grid) return;
     if (!filtered.length){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🗺️</div><p>No locations found.</p></div>`;return;}
     if (count) count.textContent=filtered.length;
-    grid.innerHTML=filtered.map(loc=>locationCard(loc)).join('');
+    grid.innerHTML=filtered.map(loc=>locationCard(loc, dm)).join('');
     grid.querySelectorAll('.location-card').forEach(card=>{
-      const handler=()=>{const l=locations.find(x=>x.id===card.dataset.id);if(l)openLocationModal(l);};
+      const handler=()=>{const l=allLocs.find(x=>x.id===card.dataset.id);if(l)openLocationModal(l);};
       card.addEventListener('click',handler);
       card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')handler();});
     });
   }
 
   function applyFilters() {
-    filtered=locations.filter(loc=>{
+    const src = dm ? allLocs : allLocs.filter(loc => !isHidden('loc', loc.id));
+    filtered=src.filter(loc=>{
       const mt=activeTag==='all'||loc.tags?.some(t=>t.toLowerCase()===activeTag.toLowerCase());
       const ms=!searchQuery||['name','description','vibe','region'].some(f=>(loc[f]||'').toLowerCase().includes(searchQuery.toLowerCase()));
       return mt&&ms;
@@ -754,13 +797,22 @@ async function initLocationsPage() {
   render();
 }
 
-function locationCard(loc) {
+function locationCard(loc, dm = false) {
   const regionColors={Lorehold:'var(--lorehold)',Prismari:'var(--prismari)',Quandrix:'var(--quandrix)',Silverquill:'var(--silverquill)',Witherbloom:'var(--witherbloom)','Central Campus':'var(--gold)'};
   const imgHtml = loc.image
     ? `<div style="width:100%;height:160px;overflow:hidden;border-radius:var(--radius) var(--radius) 0 0;margin:-1.25rem -1.25rem 1rem -1.25rem;width:calc(100% + 2.5rem);"><img src="assets/images/locations/${loc.image}" alt="${loc.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
     : '';
+  const hidden = isHidden('loc', loc.id);
+  const dmRow = dm ? `
+    <div style="border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.5rem;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:0.62rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;">DM</span>
+      <button onclick="event.stopPropagation();dmToggleLoc('${loc.id}',this)"
+        style="font-size:0.68rem;padding:2px 8px;border-radius:4px;border:1px solid;cursor:pointer;background:transparent;${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
+        ${hidden ? '🔴 Hidden' : '👁 Visible'}
+      </button>
+    </div>` : '';
   return `
-    <div class="card location-card" data-id="${loc.id}" role="button" tabindex="0" style="cursor:pointer;">
+    <div class="card location-card" data-id="${loc.id}" role="button" tabindex="0" style="cursor:pointer;${hidden&&dm?'opacity:0.55;outline:1px dashed rgba(224,112,112,0.35);':''}">
       ${imgHtml}
       <div class="location-region" style="color:${regionColors[loc.region]||'var(--text-muted)'};">${loc.region}</div>
       <div class="card-header" style="margin-bottom:0.5rem;">
@@ -770,7 +822,21 @@ function locationCard(loc) {
       <div class="location-vibe">${loc.vibe}</div>
       <div class="card-body" style="margin-top:0.4rem;">${loc.description.slice(0,120)}...</div>
       <div class="card-footer" style="margin-top:0.75rem;">${loc.tags?.slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')||''}</div>
+      ${dmRow}
     </div>`;
+}
+
+async function dmToggleLoc(id, btn) {
+  const nowHidden = await toggleHidden('loc', id);
+  if (nowHidden === null) return;
+  btn.textContent = nowHidden ? '🔴 Hidden' : '👁 Visible';
+  btn.style.color = nowHidden ? '#e07070' : 'var(--text-muted)';
+  btn.style.borderColor = nowHidden ? 'rgba(224,112,112,0.4)' : 'var(--border)';
+  const card = btn.closest('.location-card');
+  if (card) {
+    card.style.opacity = nowHidden ? '0.55' : '';
+    card.style.outline = nowHidden ? '1px dashed rgba(224,112,112,0.35)' : '';
+  }
 }
 
 async function openLocationModal(loc) {

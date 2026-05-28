@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DM Command Centre — Strixhaven</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+  <style>
+    .dm-tabs { display:flex; gap:0.25rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:0; flex-wrap:wrap; }
+    .dm-tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:0.6rem 1.1rem; font-family:inherit; font-size:0.88rem; font-weight:600; color:var(--text-muted); cursor:pointer; transition:all 0.15s; margin-bottom:-1px; letter-spacing:0.03em; }
+    .dm-tab-btn:hover { color:var(--text-secondary); }
+    .dm-tab-btn.active { color:var(--gold); border-bottom-color:var(--gold); }
+    .dm-panel { display:none; }
+    .dm-panel.active { display:block; }
+
+    .activity-item { display:flex; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-avatar { width:32px; height:32px; border-radius:50%; background:var(--bg-panel); border:1px solid var(--border); flex-shrink:0; object-fit:cover; display:flex; align-items:center; justify-content:center; font-size:0.9rem; overflow:hidden; }
+    .activity-avatar img { width:100%; height:100%; object-fit:cover; }
+    .activity-body { flex:1; min-width:0; }
+    .activity-who { font-size:0.8rem; font-weight:700; color:var(--text-primary); }
+    .activity-what { font-size:0.83rem; color:var(--text-secondary); margin-top:0.1rem; line-height:1.4; }
+    .activity-when { font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem; }
+
+    .player-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; position:relative; }
+    .player-card-avatar { width:52px; height:52px; border-radius:50%; background:var(--bg-panel); border:2px solid var(--border-glow); object-fit:cover; margin:0 auto 0.6rem; display:block; }
+    .player-card-name { font-weight:700; font-size:0.95rem; text-align:center; }
+    .player-card-char { font-size:0.8rem; color:var(--gold); text-align:center; margin-top:0.15rem; }
+    .player-card-meta { font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:0.3rem; }
+    .player-card-actions { display:flex; gap:0.4rem; justify-content:center; margin-top:0.75rem; }
+
+    .rel-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+    .rel-table th { text-align:left; padding:0.5rem 0.6rem; border-bottom:1px solid var(--border); color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.07em; white-space:nowrap; }
+    .rel-table td { padding:0.45rem 0.6rem; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:top; }
+    .rel-table tr:hover td { background:rgba(255,255,255,0.02); }
+    .rel-npc-name { font-weight:600; font-size:0.82rem; }
+    .rel-npc-college { font-size:0.7rem; color:var(--text-muted); }
+    .rel-cell-status { font-size:0.75rem; }
+    .rel-cell-bond { font-size:0.7rem; color:var(--gold); }
+    .rel-cell-note { font-size:0.7rem; color:var(--text-muted); font-style:italic; margin-top:0.15rem; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    .notes-npc-block { margin-bottom:1.5rem; }
+    .notes-npc-title { font-weight:700; font-size:0.9rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem; }
+    .notes-player-entry { padding:0.5rem 0.75rem; background:var(--bg-panel); border-radius:6px; border:1px solid var(--border); margin-bottom:0.4rem; }
+    .notes-player-who { font-size:0.72rem; color:var(--gold); font-weight:700; margin-bottom:0.25rem; }
+    .notes-player-text { font-size:0.82rem; color:var(--text-secondary); line-height:1.5; white-space:pre-wrap; }
+
+    .vis-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .vis-item:last-child { border-bottom:none; }
+    .vis-item-name { flex:1; font-size:0.85rem; }
+    .vis-item-sub { font-size:0.72rem; color:var(--text-muted); }
+    .vis-toggle-btn { font-size:0.72rem; padding:3px 10px; border-radius:4px; border:1px solid; cursor:pointer; background:transparent; transition:all 0.15s; white-space:nowrap; }
+
+    .dm-add-btn { display:flex; align-items:center; justify-content:center; gap:0.4rem; border:1px dashed var(--border); background:none; border-radius:var(--radius); padding:1rem; color:var(--text-muted); cursor:pointer; font-family:inherit; font-size:0.85rem; transition:all 0.15s; width:100%; }
+    .dm-add-btn:hover { border-color:var(--gold-dim); color:var(--gold); }
+
+    .players-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; }
+
+    .stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .stat-box { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center; }
+    .stat-box-num { font-size:1.8rem; font-weight:700; color:var(--gold); }
+    .stat-box-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.2rem; }
+
+    .refresh-btn { font-size:0.75rem; padding:0.3rem 0.7rem; }
+
+    .modal-field { margin-bottom:0.75rem; }
+    .modal-field label { display:block; font-size:0.78rem; color:var(--text-muted); margin-bottom:0.3rem; text-transform:uppercase; letter-spacing:0.06em; }
+    .modal-field input, .modal-field select, .modal-field textarea {
+      width:100%; background:var(--bg-panel); border:1px solid var(--border); border-radius:6px;
+      padding:0.5rem 0.7rem; color:var(--text-primary); font-family:inherit; font-size:0.9rem; outline:none;
+    }
+    .modal-field input:focus, .modal-field select:focus { border-color:var(--gold-dim); }
+
+    @media (max-width:600px) {
+      .rel-table { font-size:0.72rem; }
+      .rel-table th, .rel-table td { padding:0.35rem 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav" role="navigation">
+  <a href="index.html" class="nav-logo"><span class="logo-icon">🏛️</span> Strixhaven</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="students.html">Students</a>
+    <a href="faculty.html">Faculty</a>
+    <a href="locations.html">Locations</a>
+    <a href="relationships.html">Relationships</a>
+    <a href="mystery-board.html">Mystery Board</a>
+    <a href="dm.html" class="active dm-nav-link" style="color:var(--gold)!important;font-weight:700;">⚙ DM</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  <div id="nav-user"></div>
+</nav>
+<div class="mobile-menu">
+  <a href="index.html">🏠 Home</a>
+  <a href="students.html">👤 Students</a>
+  <a href="faculty.html">🎓 Faculty</a>
+  <a href="locations.html">🗺️ Locations</a>
+  <a href="relationships.html">💝 Relationships</a>
+  <a href="mystery-board.html">🔍 Mystery Board</a>
+  <a href="dm.html" style="color:var(--gold);">⚙ DM Command Centre</a>
+</div>
+
+<div class="page-wrapper">
+  <div class="container page-content">
+
+    <div class="page-header" style="margin-bottom:1.5rem;">
+      <h1 style="display:flex;align-items:center;gap:0.6rem;">⚙ DM Command Centre</h1>
+      <p style="color:var(--text-muted);font-size:0.9rem;">Campaign oversight — player activity, relationships, notes, and visibility controls.</p>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stat-row" id="dm-stats"></div>
+
+    <!-- Tabs -->
+    <div class="dm-tabs">
+      <button class="dm-tab-btn active" onclick="showDMTab('activity')">📋 Activity</button>
+      <button class="dm-tab-btn" onclick="showDMTab('players')">👥 Players</button>
+      <button class="dm-tab-btn" onclick="showDMTab('relationships')">💝 Relationships</button>
+      <button class="dm-tab-btn" onclick="showDMTab('notes')">📝 Notes</button>
+      <button class="dm-tab-btn" onclick="showDMTab('visibility')">👁 Visibility</button>
+    </div>
+
+    <!-- Activity -->
+    <div id="dm-panel-activity" class="dm-panel active">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:1rem;margin:0;">Recent Player Activity</h3>
+        <button class="btn btn-ghost refresh-btn" onclick="loadActivity()">↺ Refresh</button>
+      </div>
+      <div id="dm-activity-list"><div class="empty-state"><div class="empty-icon">📋</div><p>Loading…</p></div></div>
+    </div>
+
+    <!-- Players -->
+    <div id="dm-panel-players" class="dm-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:1rem;margin:0;">Player Roster</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAddPlayerModal()">+ Add Player</button>
+      </div>
+      <div id="dm-players-grid" class="players-grid"></div>
+    </div>
+
+    <!-- Relationships -->
+    <div id="dm-panel-relationships" class="dm-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:1rem;margin:0;">Relationship Overview</h3>
+        <button class="btn btn-ghost refresh-btn" onclick="loadRelationships()">↺ Refresh</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <div id="dm-rel-table"><div class="empty-state"><div class="empty-icon">💝</div><p>Loading…</p></div></div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div id="dm-panel-notes" class="dm-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:1rem;margin:0;">Player Notes on NPCs</h3>
+        <button class="btn btn-ghost refresh-btn" onclick="loadNotes()">↺ Refresh</button>
+      </div>
+      <div id="dm-notes-list"><div class="empty-state"><div class="empty-icon">📝</div><p>Loading…</p></div></div>
+    </div>
+
+    <!-- Visibility -->
+    <div id="dm-panel-visibility" class="dm-panel">
+      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:1.25rem;">Toggle what players can see. Hidden items are greyed out and invisible to players. You can also toggle directly from individual student/faculty/location pages.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;" id="dm-vis-grid">
+        <div class="empty-state"><div class="empty-icon">👁</div><p>Loading…</p></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/db.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+/* ── DM Dashboard ───────────────────────────────────────── */
+
+let _profiles = [];
+let _allRels  = [];
+let _npcData  = [];
+
+async function init() {
+  const ok = await initAuth(true);
+  if (!ok) return;
+  if (!isDM()) { window.location.href = 'index.html'; return; }
+  await loadReveals();
+  loadStats();
+  loadActivity();
+  loadPlayers();
+  loadRelationships();
+  loadNotes();
+  loadVisibility();
+}
+
+function showDMTab(tab) {
+  document.querySelectorAll('.dm-tab-btn').forEach((b,i) => {
+    const tabs = ['activity','players','relationships','notes','visibility'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.dm-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('dm-panel-' + tab)?.classList.add('active');
+}
+
+/* ── Stats ──────────────────────────────────────────────── */
+async function loadStats() {
+  const [profiles, rels, logs] = await Promise.all([
+    getPlayerProfiles(), getAllRelationships(), getActivityLog(1000)
+  ]);
+  _profiles = profiles; _allRels = rels;
+  const box = (num, label) =>
+    `<div class="stat-box"><div class="stat-box-num">${num}</div><div class="stat-box-label">${label}</div></div>`;
+  document.getElementById('dm-stats').innerHTML =
+    box(profiles.length, 'Players') +
+    box(rels.length, 'Relationships tracked') +
+    box(rels.filter(r => r.notes?.trim()).length, 'Notes written') +
+    box(logs.length, 'Activity events');
+}
+
+/* ── Time helper ────────────────────────────────────────── */
+function timeAgo(str) {
+  const d = new Date(str), now = new Date(), s = Math.floor((now - d) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  if (s < 172800) return 'Yesterday';
+  return Math.floor(s/86400) + 'd ago';
+}
+
+function activityDesc(log) {
+  const npc = log.entity_name ? `<strong>${log.entity_name}</strong>` : log.entity_id || 'someone';
+  switch (log.action_type) {
+    case 'rel_status':   return `Set relationship with ${npc}: ${log.old_value||'Unknown'} → <strong>${log.new_value}</strong>`;
+    case 'bond_score':   return `Changed bond with ${npc}: ${log.old_value} → <strong>${log.new_value}/4</strong>`;
+    case 'note_updated': return `Updated notes for ${npc}`;
+    case 'favorited':    return `Starred ${npc} as a favourite`;
+    case 'unfavorited':  return `Removed ${npc} from favourites`;
+    default:             return `Updated ${npc}`;
+  }
+}
+
+/* ── Activity ───────────────────────────────────────────── */
+async function loadActivity() {
+  document.getElementById('dm-activity-list').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
+  const [logs, profiles] = await Promise.all([getActivityLog(150), getPlayerProfiles()]);
+  _profiles = profiles;
+  const profMap = {};
+  profiles.forEach(p => { if (p.user_id) profMap[p.user_id] = p; });
+  if (!logs.length) {
+    document.getElementById('dm-activity-list').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No activity yet. Players need to log in and update their relationships.</p></div>';
+    return;
+  }
+  document.getElementById('dm-activity-list').innerHTML = logs.map(log => {
+    const prof = profMap[log.user_id];
+    const name = prof?.player_name || log.user_name || 'Unknown';
+    const charName = prof?.character_name ? ` <span style="color:var(--text-muted);font-weight:400;">(${prof.character_name})</span>` : '';
+    const av = log.user_avatar;
+    const avatarHtml = av
+      ? `<div class="activity-avatar"><img src="${av}" alt="${name}"></div>`
+      : `<div class="activity-avatar">${name.charAt(0).toUpperCase()}</div>`;
+    return `<div class="activity-item">
+      ${avatarHtml}
+      <div class="activity-body">
+        <div class="activity-who">${name}${charName}</div>
+        <div class="activity-what">${activityDesc(log)}</div>
+        <div class="activity-when">${timeAgo(log.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Players ────────────────────────────────────────────── */
+async function loadPlayers() {
+  const profiles = await getPlayerProfiles();
+  _profiles = profiles;
+  const grid = document.getElementById('dm-players-grid');
+  if (!grid) return;
+  const cards = profiles.map(p => {
+    const av = p.avatar_url;
+    const avatarHtml = av
+      ? `<img class="player-card-avatar" src="${av}" alt="${p.player_name||'Player'}">`
+      : `<div class="player-card-avatar" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">${(p.player_name||'?').charAt(0).toUpperCase()}</div>`;
+    const lastSeen = p.last_seen ? timeAgo(p.last_seen) : 'Never';
+    const collegeColor = {Lorehold:'#d4a849',Prismari:'#e06060',Quandrix:'#60b860',Silverquill:'#a0a0c8',Witherbloom:'#70b070'}[p.college] || 'var(--text-muted)';
+    return `<div class="player-card">
+      ${avatarHtml}
+      <div class="player-card-name">${p.player_name || 'Unnamed'}</div>
+      ${p.character_name ? `<div class="player-card-char">${p.character_name}</div>` : ''}
+      ${p.college ? `<div class="player-card-meta" style="color:${collegeColor};">${p.college}</div>` : ''}
+      <div class="player-card-meta">${p.user_id ? `Last seen: ${lastSeen}` : '<span style="color:rgba(224,112,112,0.8);">Not yet logged in</span>'}</div>
+      ${p.notes ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;font-style:italic;">${p.notes}</div>` : ''}
+      <div class="player-card-actions">
+        <button class="btn btn-ghost btn-sm" style="font-size:0.72rem;" onclick="openEditPlayerModal('${p.id}')">Edit</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:0.72rem;color:#e07070;" onclick="confirmDeletePlayer('${p.id}','${(p.player_name||'').replace(/'/g,'')}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+  grid.innerHTML = cards + `<button class="dm-add-btn" onclick="openAddPlayerModal()">+ Add Player</button>`;
+}
+
+function openAddPlayerModal(existingId) {
+  const existing = existingId ? _profiles.find(p => p.id === existingId) : null;
+  const title = existing ? 'Edit Player' : 'Add Player';
+  openModal(`
+    <h3 style="margin-bottom:1.25rem;">${title}</h3>
+    <input type="hidden" id="edit-player-id" value="${existing?.id||''}">
+    <div class="modal-field">
+      <label>Player Name (real name / nickname)</label>
+      <input type="text" id="ep-player-name" placeholder="e.g. Sarah" value="${existing?.player_name||''}">
+    </div>
+    <div class="modal-field">
+      <label>Character Name</label>
+      <input type="text" id="ep-char-name" placeholder="e.g. Elowen Starweave" value="${existing?.character_name||''}">
+    </div>
+    <div class="modal-field">
+      <label>College</label>
+      <select id="ep-college">
+        <option value="">— None —</option>
+        ${['Lorehold','Prismari','Quandrix','Silverquill','Witherbloom'].map(c =>
+          `<option value="${c}" ${existing?.college===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Google Email (for linking their login)</label>
+      <input type="email" id="ep-email" placeholder="player@gmail.com" value="${existing?.email||''}">
+    </div>
+    <div class="modal-field">
+      <label>DM Notes</label>
+      <textarea id="ep-notes" rows="2" placeholder="Private notes about this player...">${existing?.notes||''}</textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="savePlayer()">Save</button>
+    </div>
+  `);
+}
+
+function openEditPlayerModal(id) { openAddPlayerModal(id); }
+
+async function savePlayer() {
+  const id = document.getElementById('edit-player-id').value;
+  const profile = {
+    id: id || undefined,
+    player_name: document.getElementById('ep-player-name').value.trim(),
+    character_name: document.getElementById('ep-char-name').value.trim(),
+    college: document.getElementById('ep-college').value || null,
+    email: document.getElementById('ep-email').value.trim() || null,
+    notes: document.getElementById('ep-notes').value.trim(),
+  };
+  if (!id) delete profile.id;
+  const ok = await upsertPlayerProfile(profile);
+  if (ok) { closeModal(); loadPlayers(); loadStats(); showToast('Player saved!', 'success'); }
+}
+
+async function confirmDeletePlayer(id, name) {
+  if (!confirm(`Remove ${name} from the roster? Their activity data is kept.`)) return;
+  const ok = await deletePlayerProfile(id);
+  if (ok) { loadPlayers(); loadStats(); showToast('Removed', 'info'); }
+}
+
+/* ── Relationships Matrix ───────────────────────────────── */
+async function loadRelationships() {
+  document.getElementById('dm-rel-table').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
+  const [profiles, rels, students, faculty] = await Promise.all([
+    getPlayerProfiles(), getAllRelationships(),
+    fetch('data/students.json').then(r=>r.json()).catch(()=>[]),
+    fetch('data/faculty.json').then(r=>r.json()).catch(()=>[]),
+  ]);
+  _profiles = profiles; _allRels = rels;
+  _npcData = [...students, ...faculty];
+
+  const activePlayers = profiles.filter(p => p.user_id);
+  if (!activePlayers.length) {
+    document.getElementById('dm-rel-table').innerHTML = '<div class="empty-state"><div class="empty-icon">💝</div><p>No players have logged in yet.</p></div>';
+    return;
+  }
+
+  // Build map: userId → { npcId → rel }
+  const relMap = {};
+  rels.forEach(r => {
+    if (!relMap[r.user_id]) relMap[r.user_id] = {};
+    relMap[r.user_id][r.npc_id] = r;
+  });
+
+  const statusColor = { Unknown:'var(--text-muted)', Acquaintance:'#9090d8', Friend:'#78d898', Beloved:'#e8c060', Rival:'#e07070', Suspicious:'#d8a040', Trusted:'#60c0d8' };
+
+  const colHeaders = activePlayers.map(p =>
+    `<th style="min-width:100px;">${p.player_name||'Player'}<br><span style="color:var(--gold);font-weight:400;font-size:0.68rem;">${p.character_name||''}</span></th>`
+  ).join('');
+
+  const rows = _npcData.map(npc => {
+    const cells = activePlayers.map(p => {
+      const rel = relMap[p.user_id]?.[npc.id];
+      if (!rel) return `<td><span style="color:var(--text-muted);font-size:0.72rem;">—</span></td>`;
+      const sc = statusColor[rel.status] || 'var(--text-muted)';
+      const note = rel.notes?.trim();
+      return `<td>
+        <div class="rel-cell-status" style="color:${sc};">${rel.status||'Unknown'}</div>
+        ${rel.bond_score ? `<div class="rel-cell-bond">${'◆'.repeat(Math.max(0,rel.bond_score))}${'◇'.repeat(Math.max(0,4-rel.bond_score))}</div>` : ''}
+        ${note ? `<div class="rel-cell-note" title="${note.replace(/"/g,'&quot;')}">${note}</div>` : ''}
+      </td>`;
+    }).join('');
+    return `<tr>
+      <td>
+        <div class="rel-npc-name">${npc.emoji||''} ${npc.name}</div>
+        <div class="rel-npc-college">${npc.college||npc.role||''}</div>
+      </td>
+      ${cells}
+    </tr>`;
+  }).join('');
+
+  document.getElementById('dm-rel-table').innerHTML = `
+    <table class="rel-table">
+      <thead><tr><th>NPC</th>${colHeaders}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+/* ── Notes ──────────────────────────────────────────────── */
+async function loadNotes() {
+  document.getElementById('dm-notes-list').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
+  const [profiles, rels, students, faculty] = await Promise.all([
+    getPlayerProfiles(), getAllRelationships(),
+    fetch('data/students.json').then(r=>r.json()).catch(()=>[]),
+    fetch('data/faculty.json').then(r=>r.json()).catch(()=>[]),
+  ]);
+  _profiles = profiles;
+  const npcAll = [...students, ...faculty];
+  const npcMap = {};
+  npcAll.forEach(n => { npcMap[n.id] = n; });
+
+  const profMap = {};
+  profiles.forEach(p => { if (p.user_id) profMap[p.user_id] = p; });
+
+  const withNotes = rels.filter(r => r.notes?.trim());
+  if (!withNotes.length) {
+    document.getElementById('dm-notes-list').innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><p>No players have written notes yet.</p></div>';
+    return;
+  }
+
+  // Group by npc_id
+  const byNpc = {};
+  withNotes.forEach(r => {
+    if (!byNpc[r.npc_id]) byNpc[r.npc_id] = [];
+    byNpc[r.npc_id].push(r);
+  });
+
+  const blocks = Object.entries(byNpc).map(([npcId, entries]) => {
+    const npc = npcMap[npcId];
+    const playerEntries = entries.map(r => {
+      const prof = profMap[r.user_id];
+      const who = prof ? (prof.character_name || prof.player_name || 'Unknown') : 'Unknown';
+      return `<div class="notes-player-entry">
+        <div class="notes-player-who">${who}</div>
+        <div class="notes-player-text">${r.notes}</div>
+      </div>`;
+    }).join('');
+    return `<div class="notes-npc-block">
+      <div class="notes-npc-title">${npc ? (npc.emoji||'') + ' ' + npc.name : npcId}</div>
+      ${playerEntries}
+    </div>`;
+  }).join('');
+
+  document.getElementById('dm-notes-list').innerHTML = blocks;
+}
+
+/* ── Visibility ─────────────────────────────────────────── */
+async function loadVisibility() {
+  const [students, faculty, locations] = await Promise.all([
+    fetch('data/students.json').then(r=>r.json()).catch(()=>[]),
+    fetch('data/faculty.json').then(r=>r.json()).catch(()=>[]),
+    fetch('data/locations.json').then(r=>r.json()).catch(()=>[]),
+  ]);
+  const grid = document.getElementById('dm-vis-grid');
+  if (!grid) return;
+
+  function visSection(title, items, type) {
+    const rows = items.map(item => {
+      const hidden = isHidden(type, item.id);
+      return `<div class="vis-item">
+        <div>${item.emoji||''}</div>
+        <div class="vis-item-name">
+          <div>${item.name}</div>
+          <div class="vis-item-sub">${item.college||item.role||item.category||''}</div>
+        </div>
+        <button class="vis-toggle-btn" id="vis-${type}-${item.id}"
+          onclick="dmToggleVis('${type}','${item.id}',this)"
+          style="${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
+          ${hidden ? '🔴 Hidden' : '👁 Visible'}
+        </button>
+      </div>`;
+    }).join('');
+    return `<div>
+      <h4 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);margin-bottom:0.75rem;">${title}</h4>
+      ${rows}
+    </div>`;
+  }
+
+  grid.innerHTML =
+    visSection('NPCs — Students', students, 'npc') +
+    `<div>` +
+      visSection('NPCs — Faculty', faculty, 'npc').replace('<div>','').replace('</div>','') +
+      `<div style="height:2rem;"></div>` +
+      visSection('Locations', locations, 'loc').replace('<div>','').replace('</div>','') +
+    `</div>`;
+}
+
+async function dmToggleVis(type, id, btn) {
+  const nowHidden = await toggleHidden(type, id);
+  if (nowHidden === null) return;
+  btn.textContent = nowHidden ? '🔴 Hidden' : '👁 Visible';
+  btn.style.color = nowHidden ? '#e07070' : 'var(--text-muted)';
+  btn.style.borderColor = nowHidden ? 'rgba(224,112,112,0.4)' : 'var(--border)';
+}
+
+init();
+</script>
+</body>
+</html>

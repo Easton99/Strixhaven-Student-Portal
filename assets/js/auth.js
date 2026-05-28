@@ -17,6 +17,7 @@ async function initAuth(requireAuth = true) {
   _dmMode = _currentUser?.email === DM_EMAIL;
   updateNavUser();
   if (_dmMode) document.body.classList.add('dm-mode');
+  else ensurePlayerProfile?.();
   return true;
 }
 
@@ -76,4 +77,16 @@ function updateNavUser() {
       <span style="font-size:0.8rem;color:var(--text-secondary);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</span>
       <button onclick="signOut()" class="btn btn-ghost btn-sm" style="font-size:0.72rem;padding:0.25rem 0.5rem;" title="Sign out">↩</button>
     </div>`;
+
+  if (_dmMode) {
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks && !navLinks.querySelector('.dm-nav-link')) {
+      const a = document.createElement('a');
+      a.href = getBasePath() + 'dm.html';
+      a.className = 'dm-nav-link';
+      a.textContent = '⚙ DM';
+      a.style.cssText = 'color:var(--gold)!important;font-weight:700;';
+      navLinks.appendChild(a);
+    }
+  }
 }

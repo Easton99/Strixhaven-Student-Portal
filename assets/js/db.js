@@ -152,3 +152,115 @@ async function setPlayerJob(jobId) {
   if (error) { showToast('Error saving job', 'error'); return false; }
   return true;
 }
+
+/* --- ACTIVITY LOG --- */
+
+async function logActivity(actionType, entityType, entityId, entityName, oldValue, newValue) {
+  const userId = getUserId();
+  if (!userId || isDM()) return;
+  await sb.from('activity_log').insert({
+    user_id: userId,
+    user_name: getUserName(),
+    user_avatar: getUserAvatar(),
+    action_type: actionType,
+    entity_type: entityType,
+    entity_id: entityId,
+    entity_name: entityName,
+    old_value: oldValue != null ? String(oldValue) : null,
+    new_value: newValue != null ? String(newValue) : null,
+  });
+}
+
+async function getActivityLog(limit = 150) {
+  if (!isDM()) return [];
+  const { data, error } = await sb.from('activity_log')
+    .select('*').order('created_at', { ascending: false }).limit(limit);
+  if (error) { console.error('getActivityLog:', error); return []; }
+  return data || [];
+}
+
+/* --- PLAYER PROFILES --- */
+
+async function ensurePlayerProfile() {
+  const userId = getUserId();
+  const email = getCurrentUser()?.email;
+  if (!userId || isDM()) return;
+  const { data: existing } = await sb.from('player_profiles')
+    .select('id').or(`user_id.eq.${userId},email.eq.${email}`).maybeSingle();
+  if (existing) {
+    await sb.from('player_profiles').update({
+      user_id: userId,
+      avatar_url: getUserAvatar(),
+      last_seen: new Date().toISOString(),
+    }).eq('id', existing.id);
+  } else {
+    await sb.from('player_profiles').insert({
+      user_id: userId,
+      player_name: getUserName(),
+      email,
+      avatar_url: getUserAvatar(),
+    });
+  }
+}
+
+async function getPlayerProfiles() {
+  if (!isDM()) return [];
+  const { data, error } = await sb.from('player_profiles')
+    .select('*').order('created_at', { ascending: true });
+  if (error) { console.error('getPlayerProfiles:', error); return []; }
+  return data || [];
+}
+
+async function upsertPlayerProfile(profile) {
+  if (!isDM()) return false;
+  const { error } = await sb.from('player_profiles')
+    .upsert(profile, { onConflict: 'id' });
+  if (error) { showToast('Error saving player', 'error'); return false; }
+  return true;
+}
+
+async function deletePlayerProfile(id) {
+  if (!isDM()) return false;
+  const { error } = await sb.from('player_profiles').delete().eq('id', id);
+  if (error) { showToast('Error removing player', 'error'); return false; }
+  return true;
+}
+
+/* --- DM: READ ALL PLAYER DATA --- */
+
+async function getAllRelationships() {
+  if (!isDM()) return [];
+  const { data, error } = await sb.from('player_relationships').select('*');
+  if (error) { console.error('getAllRelationships:', error); return []; }
+  return data || [];
+}
+
+async function getAllPlayerNotes() {
+  if (!isDM()) return [];
+  const { data, error } = await sb.from('player_notes').select('*')
+    .order('updated_at', { ascending: false });
+  if (error) { console.error('getAllPlayerNotes:', error); return []; }
+  return data || [];
+}
+
+/* --- VISIBILITY (DM HIDE / SHOW) --- */
+
+function isHidden(type, id) {
+  if (!_revealsCache) return false;
+  return _revealsCache[`vis_${type}_${id}`] === false;
+}
+
+async function toggleHidden(type, id) {
+  if (!isDM()) return null;
+  const key = `vis_${type}_${id}`;
+  const currentlyHidden = isHidden(type, id);
+  const newRevealed = currentlyHidden; // un-hide = revealed:true; hide = revealed:false
+  const { error } = await sb.from('reveals')
+    .upsert({ key, revealed: newRevealed }, { onConflict: 'key' });
+  if (error) { showToast('Error toggling visibility', 'error'); return null; }
+  if (!_revealsCache) _revealsCache = {};
+  _revealsCache[key] = newRevealed;
+  const nowHidden = !newRevealed;
+  showToast(nowHidden ? '🔴 Hidden from players' : '🟢 Visible to players', nowHidden ? 'warn' : 'success');
+  return nowHidden;
+}
