@@ -247,20 +247,20 @@ async function getAllPlayerNotes() {
 
 function isHidden(type, id) {
   if (!_revealsCache) return false;
-  return _revealsCache[`vis_${type}_${id}`] === false;
+  // revealed=true means hidden — this way all users can read the row via RLS
+  return _revealsCache[`hidden_${type}_${id}`] === true;
 }
 
 async function toggleHidden(type, id) {
   if (!isDM()) return null;
-  const key = `vis_${type}_${id}`;
+  const key = `hidden_${type}_${id}`;
   const currentlyHidden = isHidden(type, id);
-  const newRevealed = currentlyHidden; // un-hide = revealed:true; hide = revealed:false
+  const newVal = !currentlyHidden;
   const { error } = await sb.from('reveals')
-    .upsert({ key, revealed: newRevealed }, { onConflict: 'key' });
+    .upsert({ key, revealed: newVal }, { onConflict: 'key' });
   if (error) { showToast('Error toggling visibility', 'error'); return null; }
   if (!_revealsCache) _revealsCache = {};
-  _revealsCache[key] = newRevealed;
-  const nowHidden = !newRevealed;
-  showToast(nowHidden ? '🔴 Hidden from players' : '🟢 Visible to players', nowHidden ? 'warn' : 'success');
-  return nowHidden;
+  _revealsCache[key] = newVal;
+  showToast(newVal ? '🔴 Hidden from players' : '🟢 Visible to players', newVal ? 'warn' : 'success');
+  return newVal;
 }

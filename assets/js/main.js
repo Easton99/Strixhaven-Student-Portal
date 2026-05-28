@@ -486,8 +486,8 @@ function relCard(r) {
    PAGE: MYSTERY BOARD
    ============================================================ */
 async function initMysteryPage() {
-  const [defaults, supabaseMysteries] = await Promise.all([fetchData('mysteries.json'), getMysteries()]);
-  const data = supabaseMysteries.length ? supabaseMysteries : defaults;
+  const dm = typeof isDM === 'function' && isDM();
+  const data = await getMysteries();
   let filtered = [...data];
   let activeCategory = 'all';
   const grid = document.getElementById('mystery-grid');
@@ -518,7 +518,22 @@ async function initMysteryPage() {
   }));
 
   document.getElementById('add-clue-btn')?.addEventListener('click',()=>openAddClueModal(data));
-  render();
+
+  if (dm) {
+    const clearBtn = document.getElementById('dm-clear-mystery-btn');
+    if (clearBtn) {
+      clearBtn.style.display = '';
+      clearBtn.addEventListener('click', async () => {
+        if (!confirm('Clear ALL mystery board entries? This cannot be undone.')) return;
+        for (const entry of data) { await deleteMystery(entry.id); }
+        data.length = 0;
+        applyFilters();
+        showToast('Mystery board cleared', 'info');
+      });
+    }
+  }
+
+  applyFilters();
 }
 
 function clueCard(c) {
@@ -794,7 +809,7 @@ async function initLocationsPage() {
     document.querySelectorAll('.loc-filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');activeTag=btn.dataset.tag||'all';applyFilters();
   }));
-  render();
+  applyFilters();
 }
 
 function locationCard(loc, dm = false) {
@@ -904,6 +919,8 @@ async function saveLocationNotes(id) {
    PAGE: CLUBS
    ============================================================ */
 async function initClubsPage() {
+  await loadReveals();
+  const dm = typeof isDM === 'function' && isDM();
   const [clubs, joinedIds] = await Promise.all([fetchData('clubs.json'), getPlayerClubs()]);
   let filtered=[...clubs], activeTag='all', searchQuery='';
   const grid=document.getElementById('clubs-grid');
@@ -912,7 +929,7 @@ async function initClubsPage() {
     if (!grid) return;
     if (!filtered.length){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🎭</div><p>No clubs found.</p></div>`;return;}
     const currentJoined = [...joinedIds];
-    grid.innerHTML=filtered.map(c=>clubCard(c,currentJoined.includes(c.id))).join('');
+    grid.innerHTML=filtered.map(c=>clubCard(c,currentJoined.includes(c.id),dm)).join('');
     grid.querySelectorAll('.club-card').forEach(card=>{
       const handler=()=>{const c=clubs.find(x=>x.id===card.dataset.id);if(c)openClubModal(c,joinedIds.includes(c.id));};
       card.addEventListener('click',handler);
@@ -921,7 +938,8 @@ async function initClubsPage() {
   }
 
   function applyFilters() {
-    filtered=clubs.filter(c=>{
+    const src = dm ? clubs : clubs.filter(c => !isHidden('club', c.id));
+    filtered=src.filter(c=>{
       const mt=activeTag==='all'||c.tags?.some(t=>t.toLowerCase()===activeTag.toLowerCase());
       const ms=!searchQuery||[c.name,c.vibe,c.description].some(f=>(f||'').toLowerCase().includes(searchQuery.toLowerCase()));
       return mt&&ms;
@@ -934,18 +952,41 @@ async function initClubsPage() {
     document.querySelectorAll('.club-filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');activeTag=btn.dataset.tag||'all';applyFilters();
   }));
-  render();
+  applyFilters();
 }
 
-function clubCard(c,joined) {
+function clubCard(c,joined,dm=false) {
+  const hidden = isHidden('club', c.id);
+  const dmRow = dm ? `
+    <div style="border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.5rem;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:0.62rem;color:var(--gold);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;">DM</span>
+      <button onclick="event.stopPropagation();dmToggleClub('${c.id}',this)"
+        style="font-size:0.68rem;padding:2px 8px;border-radius:4px;border:1px solid;cursor:pointer;background:transparent;${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
+        ${hidden ? '🔴 Hidden' : '👁 Visible'}
+      </button>
+    </div>` : '';
   return `
-    <div class="card club-card" data-id="${c.id}" role="button" tabindex="0" style="cursor:pointer;">
+    <div class="card club-card" data-id="${c.id}" role="button" tabindex="0" style="cursor:pointer;${hidden&&dm?'opacity:0.55;outline:1px dashed rgba(224,112,112,0.35);':''}">
       <div class="club-icon">${c.emoji}</div>
       <div class="card-title" style="margin-bottom:0.4rem;">${c.name}</div>
       <div style="font-size:0.8rem;font-style:italic;color:var(--text-muted);margin-bottom:0.75rem;">${c.vibe}</div>
       <div class="card-body">${c.description.slice(0,120)}...</div>
       <div class="card-footer">${joined?'<span class="badge badge-positive">Joined</span>':(c.recruiting?'<span class="badge badge-gold">Recruiting</span>':'')}${c.tags?.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('')||''}</div>
+      ${dmRow}
     </div>`;
+}
+
+async function dmToggleClub(id, btn) {
+  const nowHidden = await toggleHidden('club', id);
+  if (nowHidden === null) return;
+  btn.textContent = nowHidden ? '🔴 Hidden' : '👁 Visible';
+  btn.style.color = nowHidden ? '#e07070' : 'var(--text-muted)';
+  btn.style.borderColor = nowHidden ? 'rgba(224,112,112,0.4)' : 'var(--border)';
+  const card = btn.closest('.club-card');
+  if (card) {
+    card.style.opacity = nowHidden ? '0.55' : '';
+    card.style.outline = nowHidden ? '1px dashed rgba(224,112,112,0.35)' : '';
+  }
 }
 
 function openClubModal(c,joined) {
@@ -984,21 +1025,29 @@ async function handleToggleClub(id,currently) {
    PAGE: JOBS
    ============================================================ */
 async function initJobsPage() {
-  const [jobs, myJobId] = await Promise.all([fetchData('jobs.json'), getPlayerJob()]);
+  await loadReveals();
+  const dm = typeof isDM === 'function' && isDM();
+  const [allJobs, myJobId] = await Promise.all([fetchData('jobs.json'), getPlayerJob()]);
+  const jobs = dm ? allJobs : allJobs.filter(j => !isHidden('job', j.id));
   const grid=document.getElementById('jobs-grid');
   if (!grid) return;
-  grid.innerHTML=jobs.map(j=>jobListingHtml(j,myJobId===j.id)).join('');
+  grid.innerHTML=jobs.map(j=>jobListingHtml(j,myJobId===j.id,dm)).join('');
   grid.querySelectorAll('.job-listing').forEach(item=>{
-    const handler=()=>{const j=jobs.find(x=>x.id===item.dataset.id);if(j)openJobModal(j,myJobId===j.id);};
+    const handler=()=>{const j=allJobs.find(x=>x.id===item.dataset.id);if(j)openJobModal(j,myJobId===j.id);};
     item.addEventListener('click',handler);
     item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')handler();});
   });
-  updateJobDisplay(jobs, myJobId);
+  updateJobDisplay(allJobs, myJobId);
 }
 
-function jobListingHtml(j,isMyJob) {
+function jobListingHtml(j,isMyJob,dm=false) {
+  const hidden = isHidden('job', j.id);
+  const dmBtn = dm ? `<button onclick="event.stopPropagation();dmToggleJob('${j.id}',this)"
+    style="font-size:0.65rem;padding:2px 7px;border-radius:4px;border:1px solid;cursor:pointer;background:transparent;${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
+    ${hidden ? '🔴 Hidden' : '👁 Visible'}
+  </button>` : '';
   return `
-    <div class="job-listing" data-id="${j.id}" role="button" tabindex="0">
+    <div class="job-listing" data-id="${j.id}" role="button" tabindex="0" style="${hidden&&dm?'opacity:0.55;outline:1px dashed rgba(224,112,112,0.35);':''}">
       <div class="job-icon">${j.emoji}</div>
       <div class="job-info">
         <div class="job-title">${j.name}</div>
@@ -1008,8 +1057,22 @@ function jobListingHtml(j,isMyJob) {
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;min-width:90px;">
         ${isMyJob?'<span class="badge badge-positive">My Job</span>':''}
         ${j.tags?.slice(0,1).map(t=>`<span class="tag">${t}</span>`).join('')||''}
+        ${dmBtn}
       </div>
     </div>`;
+}
+
+async function dmToggleJob(id, btn) {
+  const nowHidden = await toggleHidden('job', id);
+  if (nowHidden === null) return;
+  btn.textContent = nowHidden ? '🔴 Hidden' : '👁 Visible';
+  btn.style.color = nowHidden ? '#e07070' : 'var(--text-muted)';
+  btn.style.borderColor = nowHidden ? 'rgba(224,112,112,0.4)' : 'var(--border)';
+  const listing = btn.closest('.job-listing');
+  if (listing) {
+    listing.style.opacity = nowHidden ? '0.55' : '';
+    listing.style.outline = nowHidden ? '1px dashed rgba(224,112,112,0.35)' : '';
+  }
 }
 
 function openJobModal(j,isMyJob) {

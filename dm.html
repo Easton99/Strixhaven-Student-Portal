@@ -164,8 +164,8 @@
 
     <!-- Visibility -->
     <div id="dm-panel-visibility" class="dm-panel">
-      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:1.25rem;">Toggle what players can see. Hidden items are greyed out and invisible to players. You can also toggle directly from individual student/faculty/location pages.</p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;align-items:start;" id="dm-vis-grid">
+      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:1.25rem;">Toggle what players can see. Hidden items are greyed out and invisible to players. You can also toggle directly from individual pages.</p>
+      <div id="dm-vis-grid">
         <div class="empty-state"><div class="empty-icon">👁</div><p>Loading…</p></div>
       </div>
     </div>
@@ -501,45 +501,53 @@ async function loadNotes() {
 
 /* ── Visibility ─────────────────────────────────────────── */
 async function loadVisibility() {
-  const [students, faculty, locations] = await Promise.all([
+  const [students, faculty, locations, clubs, jobs] = await Promise.all([
     fetch('data/students.json').then(r=>r.json()).catch(()=>[]),
     fetch('data/faculty.json').then(r=>r.json()).catch(()=>[]),
     fetch('data/locations.json').then(r=>r.json()).catch(()=>[]),
+    fetch('data/clubs.json').then(r=>r.json()).catch(()=>[]),
+    fetch('data/jobs.json').then(r=>r.json()).catch(()=>[]),
   ]);
   const grid = document.getElementById('dm-vis-grid');
   if (!grid) return;
 
   function visRow(item, type) {
     const hidden = isHidden(type, item.id);
-    const btnStyle = hidden
-      ? 'color:#e07070;border-color:rgba(224,112,112,0.4);'
-      : 'color:var(--text-muted);border-color:rgba(255,255,255,0.15);';
-    return `<div style="display:flex;flex-direction:row;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-      <span style="flex-shrink:0;width:1.3rem;text-align:center;">${item.emoji||''}</span>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:0.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
-        <div style="font-size:0.7rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.college||item.role||''}</div>
-      </div>
-      <button id="vis-${type}-${item.id}" onclick="dmToggleVis('${type}','${item.id}',this)"
-        style="flex-shrink:0;font-size:0.68rem;padding:2px 7px;border-radius:4px;border:1px solid;cursor:pointer;background:transparent;transition:all 0.15s;${btnStyle}">
-        ${hidden ? '🔴' : '👁'}
-      </button>
-    </div>`;
+    return `<tr>
+      <td style="padding:0.35rem 0.5rem;font-size:0.82rem;width:1.5rem;">${item.emoji||''}</td>
+      <td style="padding:0.35rem 0.5rem;font-size:0.82rem;max-width:160px;">
+        <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.college||item.role||''}</div>
+      </td>
+      <td style="padding:0.35rem 0.5rem;text-align:right;white-space:nowrap;">
+        <button id="vis-${type}-${item.id}" onclick="dmToggleVis('${type}','${item.id}',this)"
+          style="font-size:0.68rem;padding:2px 8px;border-radius:4px;border:1px solid;cursor:pointer;background:transparent;transition:all 0.15s;${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:rgba(255,255,255,0.15);'}">
+          ${hidden ? '🔴' : '👁'}
+        </button>
+      </td>
+    </tr>`;
   }
 
   function visSection(title, items, type) {
-    return `<div style="min-width:0;overflow:hidden;">
+    return `<div style="margin-bottom:2rem;">
       <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);margin-bottom:0.5rem;font-weight:700;">${title} <span style="opacity:0.5;font-weight:400;">(${items.length})</span></div>
-      <div style="max-height:460px;overflow-y:auto;overflow-x:hidden;">
-        ${items.map(item => visRow(item, type)).join('')}
+      <div style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tbody>${items.map(item => visRow(item, type)).join('')}</tbody>
+        </table>
       </div>
     </div>`;
   }
 
-  grid.innerHTML =
-    visSection('Students', students, 'npc') +
-    visSection('Faculty', faculty, 'npc') +
-    visSection('Locations', locations, 'loc');
+  const cols = [
+    visSection('Students', students, 'npc') + visSection('Faculty', faculty, 'npc'),
+    visSection('Locations', locations, 'loc'),
+    visSection('Clubs', clubs, 'club') + visSection('Jobs', jobs, 'job'),
+  ];
+
+  grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2rem;align-items:start;">
+    ${cols.map(c => `<div>${c}</div>`).join('')}
+  </div>`;
 }
 
 async function dmToggleVis(type, id, btn) {
