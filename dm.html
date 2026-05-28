@@ -156,10 +156,15 @@
     <!-- Notes -->
     <div id="dm-panel-notes" class="dm-panel">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-        <h3 style="font-size:1rem;margin:0;">Player Notes on NPCs</h3>
+        <h3 style="font-size:1rem;margin:0;">Player Notes</h3>
         <button class="btn btn-ghost refresh-btn" onclick="loadNotes()">↺ Refresh</button>
       </div>
-      <div id="dm-notes-list"><div class="empty-state"><div class="empty-icon">📝</div><p>Loading…</p></div></div>
+      <div style="display:flex;gap:0.4rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0;">
+        <button class="dm-tab-btn active" id="notes-sub-general" onclick="switchNotesTab('general')" style="font-size:0.8rem;padding:0.4rem 0.8rem;">📓 Notes Page</button>
+        <button class="dm-tab-btn" id="notes-sub-npc" onclick="switchNotesTab('npc')" style="font-size:0.8rem;padding:0.4rem 0.8rem;">🔗 NPC Notes</button>
+      </div>
+      <div id="dm-notes-general"><div class="empty-state"><div class="empty-icon">📝</div><p>Loading…</p></div></div>
+      <div id="dm-notes-npc" style="display:none;"><div class="empty-state"><div class="empty-icon">📝</div><p>Loading…</p></div></div>
     </div>
 
     <!-- Visibility -->
@@ -452,51 +457,88 @@ async function loadRelationships() {
 }
 
 /* ── Notes ──────────────────────────────────────────────── */
+const NOTE_SECTION_LABELS = {
+  'party-notes':'Party Notes','npc-notes':'NPC Notes','clues':'Clues',
+  'theories':'Theories','session-reminders':'Session Reminders',
+  'funny-moments':'Funny Moments','questions-for-dm':'Questions for DM'
+};
+
+function switchNotesTab(tab) {
+  document.getElementById('notes-sub-general').classList.toggle('active', tab === 'general');
+  document.getElementById('notes-sub-npc').classList.toggle('active', tab === 'npc');
+  document.getElementById('dm-notes-general').style.display = tab === 'general' ? '' : 'none';
+  document.getElementById('dm-notes-npc').style.display = tab === 'npc' ? '' : 'none';
+}
+
 async function loadNotes() {
-  document.getElementById('dm-notes-list').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
-  const [profiles, rels, students, faculty] = await Promise.all([
-    getPlayerProfiles(), getAllRelationships(),
+  document.getElementById('dm-notes-general').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
+  document.getElementById('dm-notes-npc').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
+
+  const [profiles, playerNotes, rels, students, faculty] = await Promise.all([
+    getPlayerProfiles(), getAllPlayerNotes(), getAllRelationships(),
     fetch('data/students.json').then(r=>r.json()).catch(()=>[]),
     fetch('data/faculty.json').then(r=>r.json()).catch(()=>[]),
   ]);
   _profiles = profiles;
-  const npcAll = [...students, ...faculty];
   const npcMap = {};
-  npcAll.forEach(n => { npcMap[n.id] = n; });
-
+  [...students, ...faculty].forEach(n => { npcMap[n.id] = n; });
   const profMap = {};
   profiles.forEach(p => { if (p.user_id) profMap[p.user_id] = p; });
 
-  const withNotes = rels.filter(r => r.notes?.trim());
-  if (!withNotes.length) {
-    document.getElementById('dm-notes-list').innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><p>No players have written notes yet.</p></div>';
-    return;
-  }
-
-  // Group by npc_id
-  const byNpc = {};
-  withNotes.forEach(r => {
-    if (!byNpc[r.npc_id]) byNpc[r.npc_id] = [];
-    byNpc[r.npc_id].push(r);
+  // ── Notes Page tab ──────────────────────────────────────
+  const byPlayer = {};
+  playerNotes.forEach(n => {
+    if (!n.content?.trim()) return;
+    if (!byPlayer[n.user_id]) byPlayer[n.user_id] = [];
+    byPlayer[n.user_id].push(n);
   });
 
-  const blocks = Object.entries(byNpc).map(([npcId, entries]) => {
-    const npc = npcMap[npcId];
-    const playerEntries = entries.map(r => {
-      const prof = profMap[r.user_id];
-      const who = prof ? (prof.character_name || prof.player_name || 'Unknown') : 'Unknown';
-      return `<div class="notes-player-entry">
-        <div class="notes-player-who">${who}</div>
-        <div class="notes-player-text">${r.notes}</div>
+  if (!Object.keys(byPlayer).length) {
+    document.getElementById('dm-notes-general').innerHTML = '<div class="empty-state"><div class="empty-icon">📓</div><p>No players have written notes yet.</p></div>';
+  } else {
+    document.getElementById('dm-notes-general').innerHTML = Object.entries(byPlayer).map(([uid, notes]) => {
+      const prof = profMap[uid];
+      const who = prof ? (prof.character_name || prof.player_name || uid) : uid;
+      const sections = notes.map(n => `
+        <div style="margin-bottom:0.75rem;">
+          <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.25rem;">${NOTE_SECTION_LABELS[n.section] || n.section}</div>
+          <div class="notes-player-text">${n.content}</div>
+        </div>`).join('');
+      return `<div class="notes-npc-block">
+        <div class="notes-npc-title">
+          ${prof?.avatar_url ? `<img src="${prof.avatar_url}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;">` : '👤'}
+          ${who}
+        </div>
+        ${sections}
       </div>`;
     }).join('');
-    return `<div class="notes-npc-block">
-      <div class="notes-npc-title">${npc ? (npc.emoji||'') + ' ' + npc.name : npcId}</div>
-      ${playerEntries}
-    </div>`;
-  }).join('');
+  }
 
-  document.getElementById('dm-notes-list').innerHTML = blocks;
+  // ── NPC Notes tab ───────────────────────────────────────
+  const withNotes = rels.filter(r => r.notes?.trim());
+  if (!withNotes.length) {
+    document.getElementById('dm-notes-npc').innerHTML = '<div class="empty-state"><div class="empty-icon">🔗</div><p>No players have written NPC notes yet.</p></div>';
+  } else {
+    const byNpc = {};
+    withNotes.forEach(r => {
+      if (!byNpc[r.npc_id]) byNpc[r.npc_id] = [];
+      byNpc[r.npc_id].push(r);
+    });
+    document.getElementById('dm-notes-npc').innerHTML = Object.entries(byNpc).map(([npcId, entries]) => {
+      const npc = npcMap[npcId];
+      return `<div class="notes-npc-block">
+        <div class="notes-npc-title">${npc ? (npc.emoji||'') + ' ' + npc.name : npcId}</div>
+        ${entries.map(r => {
+          const prof = profMap[r.user_id];
+          const who = prof ? (prof.character_name || prof.player_name || 'Unknown') : 'Unknown';
+          return `<div class="notes-player-entry">
+            <div class="notes-player-who">${who}</div>
+            <div class="notes-player-text">${r.notes}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('');
+  }
 }
 
 /* ── Visibility ─────────────────────────────────────────── */
