@@ -436,8 +436,37 @@ function parseDDBCharacter(data) {
     }
   });
 
+  // Custom backgrounds, class skill picks, and feat skill grants live in `choices`, not `modifiers`
+  const SKILL_LABEL_MAP = {
+    'acrobatics':'acrobatics','animal handling':'animal-handling','arcana':'arcana',
+    'athletics':'athletics','deception':'deception','history':'history','insight':'insight',
+    'intimidation':'intimidation','investigation':'investigation','medicine':'medicine',
+    'nature':'nature','perception':'perception','performance':'performance','persuasion':'persuasion',
+    'religion':'religion','sleight of hand':'sleight-of-hand','stealth':'stealth','survival':'survival'
+  };
+  const allChoices = [
+    ...(data.choices?.race || []),
+    ...(data.choices?.class || []),
+    ...(data.choices?.background || []),
+    ...(data.choices?.feat || []),
+  ];
+  allChoices.forEach(ch => {
+    if (!ch.optionValue || !ch.options) return;
+    const opt = ch.options.find(o => o.id === ch.optionValue);
+    const label = opt?.label?.toLowerCase();
+    const key = label && SKILL_LABEL_MAP[label];
+    if (!key) return;
+    if (ch.subType === 2) { skillExp.add(key); skillProfs.add(key); }
+    else if (ch.subType === 1) skillProfs.add(key);
+  });
+
   let initBonus = 0;
   mods.forEach(m => { if (m.type === 'bonus' && m.subType === 'initiative' && m.value) initBonus += m.value; });
+  // Jack of All Trades and similar grant half-proficiency to initiative
+  if (mods.some(m => m.type === 'half-proficiency' && m.subType === 'initiative')) {
+    const pb = Math.floor(((totalLevel||1) - 1) / 4) + 2;
+    initBonus += Math.floor(pb / 2);
+  }
 
   const ALIGNMENT_MAP = {1:'Lawful Good',2:'Neutral Good',3:'Chaotic Good',4:'Lawful Neutral',5:'True Neutral',6:'Chaotic Neutral',7:'Lawful Evil',8:'Neutral Evil',9:'Chaotic Evil'};
   const alignment = ALIGNMENT_MAP[data.alignmentId] || '';
