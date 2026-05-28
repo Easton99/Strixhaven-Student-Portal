@@ -77,6 +77,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   await initAuth();
+  await loadReveals();
   const clubs = await fetchData('clubs.json');
   const joined = await getPlayerClubs();
   let filtered = [...clubs];
@@ -101,7 +102,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function applyFilters() {
+    const dm = typeof isDM === 'function' && isDM();
     filtered = clubs.filter(c => {
+      if (!dm && isHidden('club', c.id)) return false;
       const mt = activeTag === 'all' || c.tags?.some(t => t.toLowerCase() === activeTag.toLowerCase());
       const ms = !searchQuery || [c.name,c.vibe,c.description].some(f => (f||'').toLowerCase().includes(searchQuery.toLowerCase()));
       return mt && ms;
@@ -119,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  render();
+  applyFilters();
 });
 </script>
 </body>
