@@ -312,28 +312,23 @@ function openAddPlayerModal(existingId) {
   const existing = existingId ? _profiles.find(p => p.id === existingId) : null;
   const title = existing ? 'Edit Player' : 'Add Player';
 
-  // Logged-in accounts that can be selected to pre-fill the form
-  const loggedIn = _profiles.filter(p => p.user_id && p.id !== existingId);
-  const pickSection = (!existing && loggedIn.length) ? `
-    <div class="modal-field" style="margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--border);">
-      <label>Pick from accounts that have already logged in</label>
-      <select id="ep-existing-pick" onchange="prefillFromLogin(this.value)"
+  const loggedInAccounts = _profiles.filter(p => p.user_id && p.email);
+  const emailField = loggedInAccounts.length
+    ? `<select id="ep-email" onchange="prefillFromEmailPick(this.value)"
         style="background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.7rem;color:var(--text-primary);font-family:inherit;font-size:0.9rem;width:100%;">
-        <option value="">— Select an account —</option>
-        ${loggedIn.map(p => {
+        <option value="">— Select account —</option>
+        ${loggedInAccounts.map(p => {
           const label = p.player_name && p.player_name !== p.email
-            ? `${p.player_name} (${p.email || 'no email'})`
-            : (p.email || 'Unknown');
-          return `<option value="${p.id}">${label}</option>`;
+            ? `${p.player_name} (${p.email})`
+            : p.email;
+          return `<option value="${p.email}" ${existing?.email===p.email?'selected':''}>${label}</option>`;
         }).join('')}
-      </select>
-      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;">Selecting one will pre-fill the fields below.</div>
-    </div>` : '';
+      </select>`
+    : `<input type="email" id="ep-email" placeholder="player@gmail.com" value="${existing?.email||''}">`;
 
   openModal(`
     <h3 style="margin-bottom:1.25rem;">${title}</h3>
     <input type="hidden" id="edit-player-id" value="${existing?.id||''}">
-    ${pickSection}
     <div class="modal-field">
       <label>Player Name (real name / nickname)</label>
       <input type="text" id="ep-player-name" placeholder="e.g. Sarah" value="${existing?.player_name||''}">
@@ -352,7 +347,7 @@ function openAddPlayerModal(existingId) {
     </div>
     <div class="modal-field">
       <label>Google Email (for linking their login)</label>
-      <input type="email" id="ep-email" placeholder="player@gmail.com" value="${existing?.email||''}">
+      ${emailField}
     </div>
     <div class="modal-field">
       <label>DM Notes</label>
@@ -373,6 +368,14 @@ function prefillFromLogin(profileId) {
   document.getElementById('ep-player-name').value = p.player_name || '';
   document.getElementById('ep-email').value = p.email || '';
   // Leave character_name and college blank for DM to fill in
+}
+
+function prefillFromEmailPick(email) {
+  if (!email) return;
+  const p = _profiles.find(pr => pr.email === email);
+  if (!p) return;
+  const nameField = document.getElementById('ep-player-name');
+  if (nameField && !nameField.value) nameField.value = p.player_name || '';
 }
 
 function openEditPlayerModal(id) { openAddPlayerModal(id); }
