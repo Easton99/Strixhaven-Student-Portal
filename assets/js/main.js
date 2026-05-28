@@ -437,7 +437,9 @@ async function initRelationshipsPage() {
   }
 
   function applyFilters() {
+    const dm = typeof isDM === 'function' && isDM();
     filtered = merged.filter(r => {
+      if (!dm && isHidden('npc', r.id)) return false;
       const ms = activeStatus==='all'||r.status===activeStatus;
       const mq = !searchQuery||r.name.toLowerCase().includes(searchQuery.toLowerCase());
       return ms && mq;

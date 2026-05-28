@@ -1,5 +1,21 @@
 [
   {
+    "id": "dummy-student",
+    "name": "Taryn Ashford",
+    "college": "Quandrix",
+    "emoji": "🌿",
+    "type": "student",
+    "status": "Unknown",
+    "bondScore": 0,
+    "boon": "Taryn's eye for patterns proves useful — they can help you solve problems or connect you with studious contacts.",
+    "bane": "Taryn withdraws entirely when trust is broken, and their silence is noticed.",
+    "notes": "",
+    "lastInteraction": "",
+    "needsFollowUp": false,
+    "isFavorite": false,
+    "tags": ["quandrix", "student", "academic"]
+  },
+  {
     "id": "aurora-luna-wynterstarr",
     "name": "Aurora Luna Wynterstarr",
     "college": "Prismari",
