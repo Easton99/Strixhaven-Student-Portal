@@ -85,6 +85,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   await initAuth();
+  await loadReveals();
   const faculty = await fetchData('faculty.json');
   let filtered = [...faculty];
   let activeCollege = 'all';
@@ -107,7 +108,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function applyFilters() {
+    const dm = typeof isDM === 'function' && isDM();
     filtered = faculty.filter(f => {
+      if (!dm && isHidden('npc', f.id)) return false;
       const college = f.college || 'null';
       const mc = activeCollege === 'all' || college === activeCollege;
       const ms = !searchQuery || ['name','personality','vibe','college','role','title'].some(k => (f[k]||'').toLowerCase().includes(searchQuery.toLowerCase()));
@@ -126,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  render();
+  applyFilters();
 });
 
 function openFacultyModal(f) {

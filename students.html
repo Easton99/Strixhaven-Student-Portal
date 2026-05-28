@@ -115,7 +115,9 @@
       });
     }
     function applyFilters() {
+      const dm = typeof isDM === 'function' && isDM();
       filtered = all.filter(npc => {
+        if (!dm && isHidden('npc', npc.id)) return false;
         const mc = activeCollege === 'all' || (npc.college||'').toLowerCase() === activeCollege.toLowerCase();
         const ms = !searchQuery || ['name','personality','vibe','college'].some(f => (npc[f]||'').toLowerCase().includes(searchQuery.toLowerCase()));
         return mc && ms;
@@ -131,7 +133,7 @@
         applyFilters();
       });
     });
-    render();
+    applyFilters();
   }
 </script>
 </body>
