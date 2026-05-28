@@ -251,6 +251,15 @@ async function getAllPlayerNotes() {
   return data || [];
 }
 
+async function getPlayerNotesForUser(userId) {
+  if (!isDM() || !userId) return [];
+  const { data, error } = await sb.from('player_notes')
+    .select('section, content, updated_at').eq('user_id', userId)
+    .order('updated_at', { ascending: false });
+  if (error) { console.error('getPlayerNotesForUser:', error); return []; }
+  return data || [];
+}
+
 /* --- VISIBILITY (DM HIDE / SHOW) --- */
 
 function isHidden(type, id) {

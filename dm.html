@@ -403,9 +403,10 @@ function switchDetailTab(tab) {
   });
 }
 
-function openPlayerDetail(id) {
+async function openPlayerDetail(id) {
   const p = _profiles.find(pr => pr.id === id);
   if (!p) return;
+  const playerNotes = p.user_id ? await getPlayerNotesForUser(p.user_id) : [];
   const mod = (s) => Math.floor(((s||10) - 10) / 2);
   const modStr = (m) => (m >= 0 ? '+' : '') + m;
   const level = p.level || 1;
@@ -499,9 +500,30 @@ function openPlayerDetail(id) {
     '<div class="detail-info-row"><div class="detail-info-label">'+lbl+'</div><div class="detail-info-value">'+(val||'—')+'</div></div>'
   ).join('');
 
-  const notesHtml = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:1rem;min-height:80px;white-space:pre-wrap;font-size:0.85rem;color:var(--text-secondary);">'
+  const dmNotesBox = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.85rem;min-height:60px;white-space:pre-wrap;font-size:0.85rem;color:var(--text-secondary);">'
     + (p.notes ? p.notes : '<span style="color:var(--text-muted);font-style:italic;">No DM notes yet.</span>')
     + '</div>';
+  const sectionHeader = (label) => '<div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:0.45rem;font-weight:600;">'+label+'</div>';
+  let playerNotesBlock;
+  if (!p.user_id) {
+    playerNotesBlock = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.85rem;font-size:0.8rem;color:var(--text-muted);font-style:italic;">Player has not logged in yet — no notes to read.</div>';
+  } else {
+    const withContent = playerNotes.filter(n => n.content?.trim());
+    if (!withContent.length) {
+      playerNotesBlock = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.85rem;font-size:0.8rem;color:var(--text-muted);font-style:italic;">Player hasn\'t written any notes yet.</div>';
+    } else {
+      playerNotesBlock = withContent.map(n => {
+        const label = NOTE_SECTION_LABELS[n.section] || n.section;
+        return '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.85rem;margin-bottom:0.55rem;">'
+          + '<div style="font-size:0.64rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;font-weight:700;">'+label+'</div>'
+          + '<div style="white-space:pre-wrap;font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">'+n.content+'</div>'
+          + '</div>';
+      }).join('');
+    }
+  }
+  const notesHtml = sectionHeader('DM Notes') + dmNotesBox
+    + '<div style="height:1.25rem;"></div>'
+    + sectionHeader('Player\'s Private Notes') + playerNotesBlock;
 
   const safeName = (p.player_name || p.character_name || '').replace(/'/g, "\\'");
 
