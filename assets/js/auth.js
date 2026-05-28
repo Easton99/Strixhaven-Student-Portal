@@ -18,9 +18,12 @@ async function initAuth(requireAuth = true) {
   updateNavUser();
   if (_dmMode) document.body.classList.add('dm-mode');
   else ensurePlayerProfile?.();
-  if (_currentUser && !sessionStorage.getItem('logged_login_v1')) {
-    sessionStorage.setItem('logged_login_v1', '1');
-    logActivity?.('login', null, null, null, null, null);
+  if (_currentUser) {
+    const lastLogin = parseInt(localStorage.getItem('last_login_log_v2') || '0');
+    if (Date.now() - lastLogin > 30 * 60 * 1000) {
+      localStorage.setItem('last_login_log_v2', String(Date.now()));
+      logActivity?.('login', null, null, null, null, null);
+    }
   }
   return true;
 }

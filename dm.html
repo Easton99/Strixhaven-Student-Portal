@@ -14,7 +14,9 @@
     .dm-panel { display:none; }
     .dm-panel.active { display:block; }
 
-    .activity-filter-bar { display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; padding:0.6rem 0 0.85rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem; }
+    .activity-filter-bar { display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; padding:0.45rem 0; border-bottom:1px solid var(--border); }
+    .activity-filter-bar:last-of-type { margin-bottom:0.5rem; }
+    .activity-filter-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-right:0.25rem; min-width:46px; }
     .activity-chip { display:inline-flex; align-items:center; gap:0.35rem; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:999px; padding:0.25rem 0.7rem 0.25rem 0.3rem; font-size:0.74rem; color:var(--text-secondary); cursor:pointer; font-family:inherit; transition:all 0.15s; }
     .activity-chip:hover { border-color:var(--gold-dim); color:var(--text-primary); }
     .activity-chip.active { background:rgba(212,168,73,0.18); border-color:var(--gold); color:var(--gold); }
@@ -326,6 +328,15 @@ function activityDesc(log) {
 /* ── Activity ───────────────────────────────────────────── */
 let _activityLogs = [];
 let _activityFilter = new Set();
+let _activityTypeFilter = new Set();
+
+const ACTIVITY_TYPES = [
+  { key: 'login',  label: '🔑 Logins',    actions: ['login'] },
+  { key: 'notes',  label: '📝 Notes',     actions: ['note_saved'] },
+  { key: 'npcs',   label: '🤝 NPCs',      actions: ['rel_status','bond_score','note_updated','favorited','unfavorited'] },
+  { key: 'clubs',  label: '🎭 Clubs',     actions: ['club_joined','club_left'] },
+  { key: 'jobs',   label: '💼 Jobs',      actions: ['job_taken','job_quit'] },
+];
 
 async function loadActivity() {
   document.getElementById('dm-activity-list').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
@@ -340,11 +351,14 @@ function toggleActivityFilter(userId) {
   else _activityFilter.add(userId);
   renderActivity();
 }
+function clearActivityFilter() { _activityFilter.clear(); renderActivity(); }
 
-function clearActivityFilter() {
-  _activityFilter.clear();
+function toggleActivityTypeFilter(typeKey) {
+  if (_activityTypeFilter.has(typeKey)) _activityTypeFilter.delete(typeKey);
+  else _activityTypeFilter.add(typeKey);
   renderActivity();
 }
+function clearActivityTypeFilter() { _activityTypeFilter.clear(); renderActivity(); }
 
 function renderActivity() {
   const container = document.getElementById('dm-activity-list');
@@ -359,9 +373,9 @@ function renderActivity() {
     if (l.user_id && !seenIds.has(l.user_id)) { seenIds.add(l.user_id); userIds.push(l.user_id); }
   });
 
-  const chipsHtml = userIds.length ? (
+  const playerChipsHtml = userIds.length ? (
     '<div class="activity-filter-bar">'
-    + '<span style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-right:0.25rem;">Filter:</span>'
+    + '<span class="activity-filter-label">Player:</span>'
     + '<button class="activity-chip '+(_activityFilter.size===0?'active':'')+'" onclick="clearActivityFilter()">All</button>'
     + userIds.map(uid => {
         const prof = profMap[uid];
@@ -377,13 +391,31 @@ function renderActivity() {
     + '</div>'
   ) : '';
 
-  const filtered = _activityFilter.size
-    ? _activityLogs.filter(l => _activityFilter.has(l.user_id))
-    : _activityLogs;
+  const typeChipsHtml = '<div class="activity-filter-bar">'
+    + '<span class="activity-filter-label">Type:</span>'
+    + '<button class="activity-chip '+(_activityTypeFilter.size===0?'active':'')+'" onclick="clearActivityTypeFilter()">All</button>'
+    + ACTIVITY_TYPES.map(t => {
+        const active = _activityTypeFilter.has(t.key) ? 'active' : '';
+        return '<button class="activity-chip '+active+'" onclick="toggleActivityTypeFilter(\''+t.key+'\')">'+t.label+'</button>';
+      }).join('')
+    + '</div>';
+
+  const chipsHtml = playerChipsHtml + typeChipsHtml;
+
+  const allowedActions = new Set();
+  if (_activityTypeFilter.size) {
+    ACTIVITY_TYPES.forEach(t => { if (_activityTypeFilter.has(t.key)) t.actions.forEach(a => allowedActions.add(a)); });
+  }
+
+  const filtered = _activityLogs.filter(l => {
+    if (_activityFilter.size && !_activityFilter.has(l.user_id)) return false;
+    if (_activityTypeFilter.size && !allowedActions.has(l.action_type)) return false;
+    return true;
+  });
 
   if (!filtered.length) {
     container.innerHTML = chipsHtml + '<div class="empty-state"><div class="empty-icon">📋</div><p>'
-      + (_activityFilter.size ? 'No activity from the selected players.' : 'No activity yet.')
+      + ((_activityFilter.size || _activityTypeFilter.size) ? 'No activity matching the selected filters.' : 'No activity yet.')
       + '</p></div>';
     return;
   }
