@@ -160,7 +160,7 @@ async function setPlayerJob(jobId, jobName) {
 
 async function logActivity(actionType, entityType, entityId, entityName, oldValue, newValue) {
   const userId = getUserId();
-  if (!userId) return;
+  if (!userId || isDM()) return;
   await sb.from('activity_log').insert({
     user_id: userId,
     user_name: getUserName(),
