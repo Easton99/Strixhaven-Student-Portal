@@ -87,7 +87,6 @@ async function savePlayerNote(section, content) {
     .upsert({ user_id: userId, section, content, updated_at: new Date().toISOString() },
              { onConflict: 'user_id,section' });
   if (error) { showToast('Error saving note', 'error'); return false; }
-  logActivity('note_saved', 'note_section', section, section, null, null);
   return true;
 }
 

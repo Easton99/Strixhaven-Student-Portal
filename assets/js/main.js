@@ -650,7 +650,14 @@ async function initNotesPage() {
   function getSectionKey(s) { return s.toLowerCase().replace(/\s+/g,'-'); }
   function isShared(s) { return SHARED_SECTIONS.includes(s); }
 
-  function loadSection(s) {
+  async function loadSection(s) {
+    // Flush any pending save for the section the user was previously editing
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+      saveTimer = null;
+      const prevKey = getSectionKey(activeSection);
+      await saveSection(activeSection, noteCache[prevKey] || '');
+    }
     const key = getSectionKey(s);
     if (textarea) textarea.value = noteCache[key]||'';
     if (sectionTitle) {
@@ -662,12 +669,14 @@ async function initNotesPage() {
     renderSidebar();
   }
 
-  async function saveCurrentSection() {
-    const key = getSectionKey(activeSection);
-    const content = textarea?.value||'';
+  async function saveSection(section, content) {
+    const key = getSectionKey(section);
     noteCache[key] = content;
-    if (isShared(activeSection)) await savePartyNote(key, content);
+    if (isShared(section)) await savePartyNote(key, content);
     else await savePlayerNote(key, content);
+  }
+  async function saveCurrentSection() {
+    await saveSection(activeSection, textarea?.value||'');
     showToast('Saved!','success');
   }
 
@@ -687,11 +696,17 @@ async function initNotesPage() {
   let saveTimer;
   textarea?.addEventListener('input', ()=>{
     clearTimeout(saveTimer);
-    noteCache[getSectionKey(activeSection)] = textarea.value;
-    saveTimer = setTimeout(saveCurrentSection, 1500);
+    const sectionAtType = activeSection;
+    const contentAtType = textarea.value;
+    noteCache[getSectionKey(sectionAtType)] = contentAtType;
+    saveTimer = setTimeout(() => saveSection(sectionAtType, contentAtType), 1500);
   });
 
-  document.getElementById('notes-save-btn')?.addEventListener('click', saveCurrentSection);
+  document.getElementById('notes-save-btn')?.addEventListener('click', async () => {
+    await saveCurrentSection();
+    const key = getSectionKey(activeSection);
+    logActivity('note_saved', 'note_section', key, activeSection, null, null);
+  });
 
   document.getElementById('notes-export-btn')?.addEventListener('click',()=>{
     const blob = new Blob([JSON.stringify(noteCache,null,2)],{type:'application/json'});
