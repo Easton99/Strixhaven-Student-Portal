@@ -23,12 +23,59 @@
     .activity-what { font-size:0.83rem; color:var(--text-secondary); margin-top:0.1rem; line-height:1.4; }
     .activity-when { font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem; }
 
-    .player-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; position:relative; }
-    .player-card-avatar { width:52px; height:52px; border-radius:50%; background:var(--bg-panel); border:2px solid var(--border-glow); object-fit:cover; margin:0 auto 0.6rem; display:block; }
-    .player-card-name { font-weight:700; font-size:0.95rem; text-align:center; }
-    .player-card-char { font-size:0.8rem; color:var(--gold); text-align:center; margin-top:0.15rem; }
-    .player-card-meta { font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:0.3rem; }
-    .player-card-actions { display:flex; gap:0.4rem; justify-content:center; margin-top:0.75rem; }
+    .player-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:0; position:relative; overflow:hidden; display:flex; flex-direction:column; transition:transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; cursor:pointer; }
+    .player-card:hover { border-color:var(--gold-dim); box-shadow:0 6px 20px rgba(0,0,0,0.45); transform:translateY(-2px); }
+    .player-card-banner { height:48px; position:relative; border-bottom:1px solid var(--border); }
+    .player-card-avatar-wrap { position:absolute; bottom:-26px; left:50%; transform:translateX(-50%); z-index:1; }
+    .player-card-avatar { width:56px; height:56px; border-radius:50%; background:var(--bg-panel); border:3px solid var(--bg-card); object-fit:cover; display:block; }
+    .player-card-avatar.empty { display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:700; color:var(--text-secondary); }
+    .player-card-body { padding:32px 0.75rem 0.5rem; text-align:center; flex:1; }
+    .player-card-char-name { font-size:1rem; font-weight:700; color:var(--text-primary); line-height:1.2; }
+    .player-card-player-name { font-size:0.72rem; color:var(--gold); margin-top:0.15rem; }
+    .player-card-race { font-size:0.74rem; color:var(--text-secondary); margin-top:0.5rem; }
+    .player-card-class { font-size:0.7rem; color:var(--text-muted); margin-top:0.1rem; }
+    .player-card-stats { display:grid; grid-template-columns:repeat(3,1fr); padding:0.5rem 0; background:rgba(0,0,0,0.2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .player-card-stat { text-align:center; padding:0 0.25rem; border-right:1px solid rgba(255,255,255,0.04); }
+    .player-card-stat:last-child { border-right:none; }
+    .player-card-stat-val { font-size:1rem; font-weight:700; color:var(--gold); line-height:1; }
+    .player-card-stat-lbl { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-top:0.2rem; }
+    .player-card-status { font-size:0.68rem; padding:0.4rem; text-align:center; }
+    .player-card-status.online { color:#78d898; }
+    .player-card-status.offline { color:rgba(224,112,112,0.85); }
+    .player-card-actions { display:flex; border-top:1px solid var(--border); }
+    .player-card-actions button { flex:1; border-radius:0; border:none; background:transparent; padding:0.55rem; font-size:0.72rem; cursor:pointer; color:var(--text-secondary); font-family:inherit; transition:background 0.15s, color 0.15s; }
+    .player-card-actions button + button { border-left:1px solid var(--border); }
+    .player-card-actions button:hover { background:rgba(255,255,255,0.04); color:var(--text-primary); }
+    .player-card-actions .btn-remove:hover { color:#e07070; background:rgba(224,112,112,0.08); }
+
+    .detail-header { display:flex; align-items:center; gap:1rem; padding-bottom:1rem; margin-bottom:1rem; border-bottom:1px solid var(--border); }
+    .detail-avatar { width:64px; height:64px; border-radius:50%; background:var(--bg-panel); border:2px solid var(--border-glow); object-fit:cover; flex-shrink:0; }
+    .detail-avatar.empty { display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:700; color:var(--text-secondary); }
+    .detail-header-info { flex:1; min-width:0; }
+    .detail-char-name { font-size:1.3rem; font-weight:700; color:var(--text-primary); line-height:1.2; }
+    .detail-player-name { font-size:0.78rem; color:var(--gold); margin-top:0.1rem; }
+    .detail-race-class { font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem; }
+    .detail-stat-box { background:var(--bg-panel); border:1px solid var(--border); border-radius:8px; padding:0.7rem 0.4rem; text-align:center; }
+    .detail-stat-val { font-size:1.25rem; font-weight:700; color:var(--gold); line-height:1; }
+    .detail-stat-lbl { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-top:0.35rem; }
+    .detail-abil-box { background:var(--bg-panel); border:1px solid var(--border); border-radius:8px; padding:0.55rem 0.25rem; text-align:center; }
+    .detail-abil-name { font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; }
+    .detail-abil-mod { font-size:1.25rem; font-weight:700; color:var(--gold); margin-top:0.15rem; line-height:1; }
+    .detail-abil-val { font-size:0.7rem; color:var(--text-secondary); margin-top:0.2rem; }
+    .detail-abil-save { font-size:0.6rem; color:var(--text-muted); margin-top:0.35rem; padding-top:0.25rem; border-top:1px solid var(--border); }
+    .detail-abil-save.prof { color:var(--gold); }
+    .detail-skill { display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0.55rem; background:rgba(0,0,0,0.15); border:1px solid var(--border); border-radius:6px; font-size:0.76rem; }
+    .detail-skill-dot { width:8px; height:8px; border-radius:50%; background:transparent; border:1px solid var(--text-muted); flex-shrink:0; }
+    .detail-skill.prof .detail-skill-dot { background:var(--gold); border-color:var(--gold); }
+    .detail-skill.exp .detail-skill-dot { background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 2px rgba(212,168,73,0.35); }
+    .detail-skill-name { flex:1; color:var(--text-secondary); }
+    .detail-skill.prof .detail-skill-name, .detail-skill.exp .detail-skill-name { color:var(--text-primary); font-weight:600; }
+    .detail-skill-mod { font-weight:700; color:var(--gold); min-width:28px; text-align:right; }
+    .detail-skill-ab { font-size:0.6rem; color:var(--text-muted); width:26px; text-align:right; }
+    .detail-info-row { display:flex; padding:0.6rem 0; border-bottom:1px solid var(--border); }
+    .detail-info-row:last-child { border-bottom:none; }
+    .detail-info-label { width:130px; font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; padding-top:0.1rem; }
+    .detail-info-value { flex:1; font-size:0.85rem; color:var(--text-secondary); }
 
     .rel-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
     .rel-table th { text-align:left; padding:0.5rem 0.6rem; border-bottom:1px solid var(--border); color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.07em; white-space:nowrap; }
@@ -55,7 +102,7 @@
     .dm-add-btn { display:flex; align-items:center; justify-content:center; gap:0.4rem; border:1px dashed var(--border); background:none; border-radius:var(--radius); padding:1rem; color:var(--text-muted); cursor:pointer; font-family:inherit; font-size:0.85rem; transition:all 0.15s; width:100%; }
     .dm-add-btn:hover { border-color:var(--gold-dim); color:var(--gold); }
 
-    .players-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; }
+    .players-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.25rem; }
 
     .stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem; margin-bottom:1.5rem; }
     .stat-box { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center; }
@@ -347,39 +394,203 @@ function switchPlayerTab(tab) {
   if (tab==='combat') updateCombatCalcs();
 }
 
+function switchDetailTab(tab) {
+  ['ingame','abil','skills','char','notes'].forEach(t => {
+    const btn = document.getElementById('ptab-'+t);
+    const panel = document.getElementById('detail-'+t);
+    if (btn) btn.classList.toggle('active', t===tab);
+    if (panel) panel.style.display = t===tab?'':'none';
+  });
+}
+
+function openPlayerDetail(id) {
+  const p = _profiles.find(pr => pr.id === id);
+  if (!p) return;
+  const mod = (s) => Math.floor(((s||10) - 10) / 2);
+  const modStr = (m) => (m >= 0 ? '+' : '') + m;
+  const level = p.level || 1;
+  const profBonus = _profBonus(level);
+  const wisMod = mod(p.wis_score), dexMod = mod(p.dex_score), intMod = mod(p.int_score);
+  const skillProfs = Array.isArray(p.skill_proficiencies) ? p.skill_proficiencies : [];
+  const skillExp = Array.isArray(p.skill_expertise) ? p.skill_expertise : [];
+  const saveProfs = Array.isArray(p.saving_throw_proficiencies) ? p.saving_throw_proficiencies : [];
+  const skillTotal = (sk, abMod) => abMod + (skillExp.includes(sk) ? 2*profBonus : (skillProfs.includes(sk) ? profBonus : 0));
+  const passivePerc = 10 + skillTotal('perception', wisMod);
+  const passiveInsight = 10 + skillTotal('insight', wisMod);
+  const passiveInvest = 10 + skillTotal('investigation', intMod);
+  const initTotal = dexMod + (p.initiative_bonus || 0);
+  const hpStr = p.max_hp ? (p.current_hp != null ? p.current_hp+'/'+p.max_hp : ''+p.max_hp) : '—';
+
+  const display = p.character_name || p.player_name || '?';
+  const avatarHtml = p.avatar_url
+    ? '<img src="'+p.avatar_url+'" class="detail-avatar" alt="'+display+'">'
+    : '<div class="detail-avatar empty">'+display.charAt(0).toUpperCase()+'</div>';
+
+  const subParts = [
+    p.race,
+    [p.class, p.subclass ? '('+p.subclass+')' : null, p.level ? 'Lv.'+p.level : null].filter(Boolean).join(' · ') || null,
+    p.college
+  ].filter(Boolean);
+
+  const inGameHtml =
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:0.6rem;">'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+hpStr+'</div><div class="detail-stat-lbl">Hit Points</div></div>'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+(p.armor_class||'—')+'</div><div class="detail-stat-lbl">Armor Class</div></div>'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+modStr(initTotal)+'</div><div class="detail-stat-lbl">Initiative</div></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:0.6rem;">'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+passivePerc+'</div><div class="detail-stat-lbl">Passive Perception</div></div>'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+passiveInsight+'</div><div class="detail-stat-lbl">Passive Insight</div></div>'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+passiveInvest+'</div><div class="detail-stat-lbl">Passive Investigation</div></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 2fr;gap:0.6rem;">'
+    + '<div class="detail-stat-box"><div class="detail-stat-val">'+(p.speed||30)+' ft</div><div class="detail-stat-lbl">Speed</div></div>'
+    + '<div class="detail-stat-box"><div class="detail-stat-val" style="font-size:0.95rem;">'+(p.senses||'—')+'</div><div class="detail-stat-lbl">Senses</div></div>'
+    + '</div>';
+
+  const ABIL = [{k:'str',n:'STR'},{k:'dex',n:'DEX'},{k:'con',n:'CON'},{k:'int',n:'INT'},{k:'wis',n:'WIS'},{k:'cha',n:'CHA'}];
+  const abilHtml =
+    '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.5rem;">'
+    + ABIL.map(a => {
+        const score = p[a.k+'_score'] || 10;
+        const m = mod(score);
+        const isProfSave = saveProfs.includes(a.k);
+        const saveBonus = m + (isProfSave ? profBonus : 0);
+        return '<div class="detail-abil-box">'
+          + '<div class="detail-abil-name">'+a.n+'</div>'
+          + '<div class="detail-abil-mod">'+modStr(m)+'</div>'
+          + '<div class="detail-abil-val">Score '+score+'</div>'
+          + '<div class="detail-abil-save '+(isProfSave?'prof':'')+'">'+(isProfSave?'● ':'')+'Save '+modStr(saveBonus)+'</div>'
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<div style="font-size:0.72rem;color:var(--text-muted);margin-top:1rem;text-align:center;">Proficiency Bonus <strong style="color:var(--gold);">'+modStr(profBonus)+'</strong></div>';
+
+  const skillsHtml =
+    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.4rem;">'
+    + SKILLS.map(sk => {
+        const abMod = mod(p[sk.ab.toLowerCase()+'_score']);
+        const total = skillTotal(sk.key, abMod);
+        const cls = skillExp.includes(sk.key) ? 'exp' : (skillProfs.includes(sk.key) ? 'prof' : '');
+        return '<div class="detail-skill '+cls+'">'
+          + '<span class="detail-skill-dot"></span>'
+          + '<span class="detail-skill-name">'+sk.label+'</span>'
+          + '<span class="detail-skill-mod">'+modStr(total)+'</span>'
+          + '<span class="detail-skill-ab">'+sk.ab+'</span>'
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.85rem;display:flex;gap:1.25rem;justify-content:center;">'
+    + '<span>○ Untrained</span><span style="color:var(--gold);">● Proficient</span><span style="color:var(--gold);">◉ Expertise</span>'
+    + '</div>';
+
+  const charRows = [
+    ['Race', p.race],
+    ['Class', p.class],
+    ['Subclass', p.subclass],
+    ['Level', p.level],
+    ['Background', p.background],
+    ['Alignment', p.alignment],
+    ['College', p.college],
+    ['Languages', p.languages],
+    ['Senses', p.senses],
+  ];
+  const charHtml = charRows.map(([lbl, val]) =>
+    '<div class="detail-info-row"><div class="detail-info-label">'+lbl+'</div><div class="detail-info-value">'+(val||'—')+'</div></div>'
+  ).join('');
+
+  const notesHtml = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:1rem;min-height:80px;white-space:pre-wrap;font-size:0.85rem;color:var(--text-secondary);">'
+    + (p.notes ? p.notes : '<span style="color:var(--text-muted);font-style:italic;">No DM notes yet.</span>')
+    + '</div>';
+
+  const safeName = (p.player_name || p.character_name || '').replace(/'/g, "\\'");
+
+  openModal(
+    '<div class="detail-header">'+avatarHtml
+    + '<div class="detail-header-info">'
+    + '<div class="detail-char-name">'+(p.character_name||'Unnamed')+'</div>'
+    + (p.player_name ? '<div class="detail-player-name">'+p.player_name+'</div>' : '')
+    + '<div class="detail-race-class">'+(subParts.join(' · ')||'—')+'</div>'
+    + '</div></div>'
+
+    + '<div style="display:flex;gap:0.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap;">'
+    + '<button class="dm-tab-btn active" id="ptab-ingame" onclick="switchDetailTab(\'ingame\')" style="font-size:0.78rem;padding:0.45rem 0.85rem;">&#x1F6E1;&#xFE0F; In Game</button>'
+    + '<button class="dm-tab-btn" id="ptab-abil" onclick="switchDetailTab(\'abil\')" style="font-size:0.78rem;padding:0.45rem 0.85rem;">&#x1F3B2; Stats</button>'
+    + '<button class="dm-tab-btn" id="ptab-skills" onclick="switchDetailTab(\'skills\')" style="font-size:0.78rem;padding:0.45rem 0.85rem;">&#x1F4DC; Skills</button>'
+    + '<button class="dm-tab-btn" id="ptab-char" onclick="switchDetailTab(\'char\')" style="font-size:0.78rem;padding:0.45rem 0.85rem;">&#x2694;&#xFE0F; Character</button>'
+    + '<button class="dm-tab-btn" id="ptab-notes" onclick="switchDetailTab(\'notes\')" style="font-size:0.78rem;padding:0.45rem 0.85rem;">&#x1F4DD; Notes</button>'
+    + '</div>'
+
+    + '<div id="detail-ingame">'+inGameHtml+'</div>'
+    + '<div id="detail-abil" style="display:none;">'+abilHtml+'</div>'
+    + '<div id="detail-skills" style="display:none;">'+skillsHtml+'</div>'
+    + '<div id="detail-char" style="display:none;">'+charHtml+'</div>'
+    + '<div id="detail-notes" style="display:none;">'+notesHtml+'</div>'
+
+    + '<div style="display:flex;justify-content:space-between;gap:0.5rem;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1rem;">'
+    + '<button class="btn btn-ghost btn-sm" style="color:#e07070;" onclick="closeModal();confirmDeletePlayer(\''+p.id+'\',\''+safeName+'\')">Remove</button>'
+    + '<div style="display:flex;gap:0.5rem;">'
+    + '<button class="btn btn-ghost btn-sm" onclick="closeModal()">Close</button>'
+    + '<button class="btn btn-primary btn-sm" onclick="closeModal();openEditPlayerModal(\''+p.id+'\')">Edit</button>'
+    + '</div></div>'
+  );
+}
+
 async function loadPlayers() {
   const [profiles, knownUsers] = await Promise.all([getPlayerProfiles(), getKnownUsers()]);
   _profiles = profiles;
   _knownUsers = knownUsers;
   const grid = document.getElementById('dm-players-grid');
   if (!grid) return;
+  const mod = (s) => Math.floor(((s||10) - 10) / 2);
+  const modStr = (m) => (m >= 0 ? '+' : '') + m;
   const cards = profiles.map(p => {
     const av = p.avatar_url;
+    const display = p.character_name || p.player_name || '?';
+    const initials = display.charAt(0).toUpperCase();
     const avatarHtml = av
-      ? `<img class="player-card-avatar" src="${av}" alt="${p.player_name||'Player'}">`
-      : `<div class="player-card-avatar" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">${(p.player_name||'?').charAt(0).toUpperCase()}</div>`;
+      ? `<img class="player-card-avatar" src="${av}" alt="${display}">`
+      : `<div class="player-card-avatar empty">${initials}</div>`;
     const lastSeen = p.last_seen ? timeAgo(p.last_seen) : 'Never';
-    const collegeColor = {Lorehold:'#d4a849',Prismari:'#e06060',Quandrix:'#60b860',Silverquill:'#a0a0c8',Witherbloom:'#70b070'}[p.college] || 'var(--text-muted)';
-    const classLine = [p.class, p.subclass ? '('+p.subclass+')' : null, p.level ? 'Lv.'+p.level : null].filter(Boolean).join(' · ');
-    const hpLine = p.max_hp ? (p.current_hp != null ? p.current_hp+'/'+p.max_hp : p.max_hp) : null;
-    const combatLine = [p.armor_class ? 'AC '+p.armor_class : null, hpLine ? 'HP '+hpLine : null].filter(Boolean).join(' · ');
-    return `<div class="player-card">
-      ${avatarHtml}
-      <div class="player-card-name">${p.player_name || 'Unnamed'}</div>
-      ${p.character_name ? `<div class="player-card-char">${p.character_name}</div>` : ''}
-      ${p.race ? `<div class="player-card-meta" style="color:var(--text-secondary);font-size:0.7rem;">${p.race}</div>` : ''}
-      ${p.college ? `<div class="player-card-meta" style="color:${collegeColor};">${p.college}</div>` : ''}
-      ${classLine ? `<div class="player-card-meta">${classLine}</div>` : ''}
-      ${combatLine ? `<div class="player-card-meta" style="font-size:0.7rem;">${combatLine}</div>` : ''}
-      <div class="player-card-meta">${p.user_id ? 'Last seen: '+lastSeen : '<span style="color:rgba(224,112,112,0.8);">Not yet logged in</span>'}</div>
-      ${p.notes ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;font-style:italic;">${p.notes}</div>` : ''}
-      <div class="player-card-actions">
-        <button class="btn btn-ghost btn-sm" style="font-size:0.72rem;" onclick="openEditPlayerModal('${p.id}')">Edit</button>
-        <button class="btn btn-ghost btn-sm" style="font-size:0.72rem;color:#e07070;" onclick="confirmDeletePlayer('${p.id}','${(p.player_name||'').replace(/'/g,'')}')">Remove</button>
+    const collegeColor = {Lorehold:'#d4a849',Prismari:'#e06060',Quandrix:'#60b860',Silverquill:'#a0a0c8',Witherbloom:'#70b070'}[p.college] || 'rgba(180,180,180,0.4)';
+    const classLine = [p.class, p.level ? 'Lv.'+p.level : null].filter(Boolean).join(' · ');
+    const hpStr = p.max_hp ? (p.current_hp != null ? p.current_hp+'/'+p.max_hp : ''+p.max_hp) : '—';
+    const initTotal = mod(p.dex_score) + (p.initiative_bonus || 0);
+    const safeName = (p.player_name || p.character_name || '').replace(/'/g, "\\'");
+    return `<div class="player-card" onclick="openPlayerDetail('${p.id}')">
+      <div class="player-card-banner" style="background:linear-gradient(135deg, ${collegeColor}55 0%, transparent 70%);">
+        <div class="player-card-avatar-wrap">${avatarHtml}</div>
+      </div>
+      <div class="player-card-body">
+        <div class="player-card-char-name">${p.character_name || 'Unnamed'}</div>
+        ${p.player_name ? `<div class="player-card-player-name">${p.player_name}</div>` : ''}
+        ${p.race ? `<div class="player-card-race">${p.race}</div>` : ''}
+        ${classLine ? `<div class="player-card-class">${classLine}</div>` : ''}
+      </div>
+      <div class="player-card-stats">
+        <div class="player-card-stat">
+          <div class="player-card-stat-val">${hpStr}</div>
+          <div class="player-card-stat-lbl">HP</div>
+        </div>
+        <div class="player-card-stat">
+          <div class="player-card-stat-val">${p.armor_class || '—'}</div>
+          <div class="player-card-stat-lbl">AC</div>
+        </div>
+        <div class="player-card-stat">
+          <div class="player-card-stat-val">${modStr(initTotal)}</div>
+          <div class="player-card-stat-lbl">Init</div>
+        </div>
+      </div>
+      <div class="player-card-status ${p.user_id ? 'online' : 'offline'}">
+        ${p.user_id ? '● Last seen ' + lastSeen : '○ Not yet logged in'}
+      </div>
+      <div class="player-card-actions" onclick="event.stopPropagation();">
+        <button onclick="openEditPlayerModal('${p.id}')">✎ Edit</button>
+        <button class="btn-remove" onclick="confirmDeletePlayer('${p.id}','${safeName}')">✕ Remove</button>
       </div>
     </div>`;
   }).join('');
-  grid.innerHTML = cards + `<button class="dm-add-btn" onclick="openAddPlayerModal()">+ Add Player</button>`;
+  grid.innerHTML = cards + `<button class="dm-add-btn" onclick="openAddPlayerModal()" style="min-height:280px;display:flex;flex-direction:column;justify-content:center;font-size:0.95rem;">+ Add Player</button>`;
 }
 
 function toggleDDBImport() {
