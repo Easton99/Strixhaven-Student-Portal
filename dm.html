@@ -513,37 +513,36 @@ async function loadVisibility() {
     const rows = items.map(item => {
       const hidden = isHidden(type, item.id);
       return `<div class="vis-item">
-        <div>${item.emoji||''}</div>
-        <div class="vis-item-name">
-          <div>${item.name}</div>
-          <div class="vis-item-sub">${item.college||item.role||item.category||''}</div>
+        <span style="flex-shrink:0;width:1.4rem;text-align:center;font-size:1rem;">${item.emoji||''}</span>
+        <div style="flex:1;min-width:0;overflow:hidden;">
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.82rem;">${item.name}</div>
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.7rem;color:var(--text-muted);">${item.college||item.role||item.category||''}</div>
         </div>
         <button class="vis-toggle-btn" id="vis-${type}-${item.id}"
           onclick="dmToggleVis('${type}','${item.id}',this)"
-          style="${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
-          ${hidden ? '🔴 Hidden' : '👁 Visible'}
+          style="flex-shrink:0;${hidden?'color:#e07070;border-color:rgba(224,112,112,0.4);':'color:var(--text-muted);border-color:var(--border);'}">
+          ${hidden ? '🔴' : '👁'}
         </button>
       </div>`;
     }).join('');
-    return `<div>
-      <h4 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);margin-bottom:0.75rem;">${title}</h4>
-      ${rows}
+    return `<div style="min-width:0;">
+      <h4 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);margin-bottom:0.5rem;position:sticky;top:0;background:var(--bg-base,#0f0a05);padding:0.25rem 0;">${title} <span style="color:var(--border);font-weight:400;">(${items.length})</span></h4>
+      <div style="max-height:420px;overflow-y:auto;padding-right:0.25rem;">${rows}</div>
     </div>`;
   }
 
+  grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  grid.style.alignItems = 'start';
   grid.innerHTML =
-    visSection('NPCs — Students', students, 'npc') +
-    `<div>` +
-      visSection('NPCs — Faculty', faculty, 'npc').replace('<div>','').replace('</div>','') +
-      `<div style="height:2rem;"></div>` +
-      visSection('Locations', locations, 'loc').replace('<div>','').replace('</div>','') +
-    `</div>`;
+    visSection('Students', students, 'npc') +
+    visSection('Faculty', faculty, 'npc') +
+    visSection('Locations', locations, 'loc');
 }
 
 async function dmToggleVis(type, id, btn) {
   const nowHidden = await toggleHidden(type, id);
   if (nowHidden === null) return;
-  btn.textContent = nowHidden ? '🔴 Hidden' : '👁 Visible';
+  btn.textContent = nowHidden ? '🔴' : '👁';
   btn.style.color = nowHidden ? '#e07070' : 'var(--text-muted)';
   btn.style.borderColor = nowHidden ? 'rgba(224,112,112,0.4)' : 'var(--border)';
 }
