@@ -1,5 +1,28 @@
 [
   {
+    "id": "dummy-student",
+    "name": "Taryn Ashford",
+    "type": "student",
+    "college": "Quandrix",
+    "emoji": "🌿",
+    "race": "Human",
+    "role": "Student",
+    "year": "First Year",
+    "personality": "Thoughtful and methodical, Taryn approaches everything like an equation waiting to be solved. They're friendly enough once you get past the initial reserve, and have a talent for finding patterns nobody else notices.",
+    "vibe": "Quiet, curious, detail-oriented, unexpectedly witty",
+    "extracurriculars": ["Dragonchess Club"],
+    "job": null,
+    "bondBoon": "Taryn's eye for patterns and numbers proves unexpectedly useful — they can help you puzzle through problems or connect you with studious contacts.",
+    "bondBane": "Taryn withdraws entirely when trust is broken, and their silence speaks volumes to mutual acquaintances.",
+    "favoriteLocations": ["The Biblioplex", "Quandrix Campus"],
+    "tags": ["quandrix", "academic", "quiet", "analytical"],
+    "relationshipStatus": "Unknown",
+    "bondScore": 0,
+    "playerNotes": "",
+    "rumors": "Allegedly transferred here after winning a mathematics competition that stumped the judges.",
+    "gossip": "Some say Taryn is only here on a scholarship and is terrified of losing it."
+  },
+  {
     "id": "aurora-luna-wynterstarr",
     "name": "Aurora Luna Wynterstarr",
     "type": "student",

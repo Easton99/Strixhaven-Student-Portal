@@ -1,5 +1,20 @@
 [
   {
+    "id": "dummy-faculty",
+    "name": "Professor Wren Calloway",
+    "type": "faculty",
+    "college": "Silverquill",
+    "emoji": "🖋️",
+    "race": "Half-Elf",
+    "role": "Lecturer",
+    "title": "Lecturer in Rhetoric & Persuasion",
+    "specialty": "Magical linguistics, persuasion theory, the ethics of silver-tongued magic",
+    "personality": "Sharp, articulate, and always three steps ahead of the conversation. Professor Calloway has a gift for making students feel both challenged and supported. Their lectures feel less like classes and more like very elegant arguments you somehow end up agreeing with.",
+    "vibe": "Witty, exacting, generous with praise when earned, intimidating when not",
+    "playerSummary": "A well-liked Silverquill lecturer with high standards and a dry sense of humour. Good to know if you want help with rhetoric, politics, or navigating campus social dynamics.",
+    "tags": ["silverquill", "lecturer", "rhetoric", "language", "social"]
+  },
+  {
     "id": "dean-tullus",
     "name": "Augusta Tullus",
     "type": "faculty",

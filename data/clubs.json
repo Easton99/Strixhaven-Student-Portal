@@ -1,5 +1,19 @@
 [
   {
+    "id": "dummy-club",
+    "name": "Campus Stargazers",
+    "emoji": "🔭",
+    "vibe": "Relaxed, wonder-struck, a little sleepy from staying up too late",
+    "description": "A casual club for students who enjoy watching the night sky, charting magical constellations, and debating what lies beyond the visible horizon. No prior astronomy knowledge required — just a willingness to stay up past midnight and argue about stars.",
+    "meetingStyle": "Informal rooftop gatherings, observation nights, occasional guest lectures from Quandrix faculty",
+    "relatedNPCs": ["Taryn Ashford"],
+    "playerMembership": null,
+    "eventIdeas": ["Solstice observation nights", "Star-chart competitions", "Collaborative constellation mapping"],
+    "socialHooks": "A surprisingly social club despite the quiet premise. Late nights breed honest conversations.",
+    "tags": ["all-college", "casual", "nature", "academic", "social"],
+    "recruiting": true
+  },
+  {
     "id": "dead-languages",
     "name": "Dead Languages Society",
     "emoji": "📜",

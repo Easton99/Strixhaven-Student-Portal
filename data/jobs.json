@@ -1,5 +1,19 @@
 [
   {
+    "id": "dummy-job",
+    "name": "Campus Courier",
+    "emoji": "📬",
+    "location": "Central Campus Commons",
+    "locationId": "central-campus-commons",
+    "description": "Deliver parcels, notes, and the occasional enchanted package between buildings across the Strixhaven campus. You'll know the layout of every college grounds better than most staff, and you'll meet everyone eventually.",
+    "responsibilities": ["Collecting and sorting outgoing mail", "Delivering packages across all five college campuses", "Handling fragile or magically sensitive items carefully", "Keeping delivery records"],
+    "commonCoworkers": ["Various administrative staff"],
+    "socialOpportunities": "You're the one person with a legitimate reason to be anywhere on campus at any time. People talk to couriers.",
+    "roleplaying_hooks": "You accidentally deliver something to the wrong person. A package feels wrong — cold, or humming faintly. Someone is waiting anxiously for a letter that never comes.",
+    "reward": "A small stipend and an all-campus access pass that gets you through most locked gates.",
+    "tags": ["all-college", "social", "outdoor", "active", "central"]
+  },
+  {
     "id": "biblioplex-assistant",
     "name": "Biblioplex Research Assistant",
     "emoji": "📚",
