@@ -417,7 +417,8 @@ async function toggleFavoriteFromModal(id) {
    PAGE: RELATIONSHIPS
    ============================================================ */
 async function initRelationshipsPage() {
-  const [data, relData] = await Promise.all([fetchData('relationships.json'), getPlayerRelationships()]);
+  const [students, faculty, relData] = await Promise.all([fetchData('students.json'), fetchData('faculty.json'), getPlayerRelationships()]);
+  const data = [...students, ...faculty];
   const merged = data.map(r => ({ ...r, ...(relData[r.id]||{}), status: (relData[r.id]?.status) || r.relationshipStatus || 'Unknown', bondScore: relData[r.id]?.bond_score ?? 0, isFavorite: relData[r.id]?.is_favorite || false }));
   let filtered = [...merged];
   let activeStatus = 'all', searchQuery = '';
