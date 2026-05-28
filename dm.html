@@ -406,7 +406,12 @@ function switchDetailTab(tab) {
 async function openPlayerDetail(id) {
   const p = _profiles.find(pr => pr.id === id);
   if (!p) return;
-  const playerNotes = p.user_id ? await getPlayerNotesForUser(p.user_id) : [];
+  let resolvedUserId = p.user_id;
+  if (!resolvedUserId && p.email) {
+    const known = _knownUsers.find(u => u.email === p.email);
+    if (known) resolvedUserId = known.id;
+  }
+  const playerNotes = resolvedUserId ? await getPlayerNotesForUser(resolvedUserId) : [];
   const mod = (s) => Math.floor(((s||10) - 10) / 2);
   const modStr = (m) => (m >= 0 ? '+' : '') + m;
   const level = p.level || 1;
@@ -505,7 +510,7 @@ async function openPlayerDetail(id) {
     + '</div>';
   const sectionHeader = (label) => '<div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:0.45rem;font-weight:600;">'+label+'</div>';
   let playerNotesBlock;
-  if (!p.user_id) {
+  if (!resolvedUserId) {
     playerNotesBlock = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:0.85rem;font-size:0.8rem;color:var(--text-muted);font-style:italic;">Player has not logged in yet — no notes to read.</div>';
   } else {
     const withContent = playerNotes.filter(n => n.content?.trim());
