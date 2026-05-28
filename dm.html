@@ -186,9 +186,10 @@
 <script>
 /* ── DM Dashboard ───────────────────────────────────────── */
 
-let _profiles = [];
-let _allRels  = [];
-let _npcData  = [];
+let _profiles   = [];
+let _knownUsers = [];
+let _allRels    = [];
+let _npcData    = [];
 
 async function init() {
   const ok = await initAuth(true);
@@ -345,8 +346,9 @@ function switchPlayerTab(tab) {
 }
 
 async function loadPlayers() {
-  const profiles = await getPlayerProfiles();
+  const [profiles, knownUsers] = await Promise.all([getPlayerProfiles(), getKnownUsers()]);
   _profiles = profiles;
+  _knownUsers = knownUsers;
   const grid = document.getElementById('dm-players-grid');
   if (!grid) return;
   const cards = profiles.map(p => {
@@ -385,13 +387,13 @@ function openAddPlayerModal(existingId) {
   const saveProfs = Array.isArray(e?.saving_throw_proficiencies) ? e.saving_throw_proficiencies : [];
   const lv = e?.level || 1;
 
-  const loggedInAccounts = _profiles.filter(p => p.user_id && p.email);
-  const emailField = loggedInAccounts.length
+  const loginChoices = _knownUsers.filter(u => u.email !== DM_EMAIL);
+  const emailField = loginChoices.length
     ? '<select id="ep-email" onchange="prefillFromEmailPick(this.value)" style="background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.7rem;color:var(--text-primary);font-family:inherit;font-size:0.9rem;width:100%;">'
       + '<option value="">— Select account —</option>'
-      + loggedInAccounts.map(p => {
-          const lbl = p.player_name && p.player_name !== p.email ? p.player_name+' ('+p.email+')' : p.email;
-          return '<option value="'+p.email+'" '+(e?.email===p.email?'selected':'')+'>'+lbl+'</option>';
+      + loginChoices.map(u => {
+          const lbl = u.display_name && u.display_name !== u.email ? u.display_name+' ('+u.email+')' : u.email;
+          return '<option value="'+u.email+'" '+(e?.email===u.email?'selected':'')+'>'+lbl+'</option>';
         }).join('')
       + '</select>'
     : '<input type="email" id="ep-email" placeholder="player@gmail.com" value="'+(e?.email||'')+'">';
@@ -485,10 +487,10 @@ function openAddPlayerModal(existingId) {
 
 function prefillFromEmailPick(email) {
   if (!email) return;
-  const p = _profiles.find(pr => pr.email === email);
-  if (!p) return;
+  const u = _knownUsers.find(k => k.email === email);
+  if (!u) return;
   const nameField = document.getElementById('ep-player-name');
-  if (nameField && !nameField.value) nameField.value = p.player_name || '';
+  if (nameField && !nameField.value) nameField.value = u.display_name || '';
 }
 
 function openEditPlayerModal(id) { openAddPlayerModal(id); }

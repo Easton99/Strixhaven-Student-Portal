@@ -203,6 +203,14 @@ async function ensurePlayerProfile() {
   }
 }
 
+async function getKnownUsers() {
+  if (!isDM()) return [];
+  const { data, error } = await sb.from('known_users')
+    .select('id, email, display_name, avatar_url').order('display_name');
+  if (error) { console.error('getKnownUsers:', error); return []; }
+  return data || [];
+}
+
 async function getPlayerProfiles() {
   if (!isDM()) return [];
   const { data, error } = await sb.from('player_profiles')
