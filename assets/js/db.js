@@ -87,6 +87,7 @@ async function savePlayerNote(section, content) {
     .upsert({ user_id: userId, section, content, updated_at: new Date().toISOString() },
              { onConflict: 'user_id,section' });
   if (error) { showToast('Error saving note', 'error'); return false; }
+  logActivity('note_saved', 'note_section', section, section, null, null);
   return true;
 }
 
@@ -121,15 +122,17 @@ async function getPlayerClubs() {
   return (data || []).map(r => r.club_id);
 }
 
-async function togglePlayerClub(clubId, isCurrentlyJoined) {
+async function togglePlayerClub(clubId, isCurrentlyJoined, clubName) {
   const userId = getUserId();
   if (!userId) return false;
   if (isCurrentlyJoined) {
     const { error } = await sb.from('player_clubs').delete().eq('user_id', userId).eq('club_id', clubId);
     if (error) { showToast('Error leaving club', 'error'); return false; }
+    logActivity('club_left', 'club', clubId, clubName || clubId, null, null);
   } else {
     const { error } = await sb.from('player_clubs').insert({ user_id: userId, club_id: clubId });
     if (error) { showToast('Error joining club', 'error'); return false; }
+    logActivity('club_joined', 'club', clubId, clubName || clubId, null, null);
   }
   return true;
 }
@@ -144,12 +147,13 @@ async function getPlayerJob() {
   return data?.job_id ?? null;
 }
 
-async function setPlayerJob(jobId) {
+async function setPlayerJob(jobId, jobName) {
   const userId = getUserId();
   if (!userId) return false;
   const { error } = await sb.from('player_jobs')
     .upsert({ user_id: userId, job_id: jobId, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
   if (error) { showToast('Error saving job', 'error'); return false; }
+  logActivity(jobId ? 'job_taken' : 'job_quit', 'job', jobId, jobName || jobId, null, null);
   return true;
 }
 
@@ -157,7 +161,7 @@ async function setPlayerJob(jobId) {
 
 async function logActivity(actionType, entityType, entityId, entityName, oldValue, newValue) {
   const userId = getUserId();
-  if (!userId || isDM()) return;
+  if (!userId) return;
   await sb.from('activity_log').insert({
     user_id: userId,
     user_name: getUserName(),

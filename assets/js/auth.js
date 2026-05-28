@@ -18,6 +18,10 @@ async function initAuth(requireAuth = true) {
   updateNavUser();
   if (_dmMode) document.body.classList.add('dm-mode');
   else ensurePlayerProfile?.();
+  if (_currentUser && !sessionStorage.getItem('logged_login_v1')) {
+    sessionStorage.setItem('logged_login_v1', '1');
+    logActivity?.('login', null, null, null, null, null);
+  }
   return true;
 }
 

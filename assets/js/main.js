@@ -1010,15 +1010,15 @@ function openClubModal(c,joined) {
       <p style="font-size:0.88rem;font-style:italic;">${c.socialHooks}</p>
     </div>
     <div style="display:flex;justify-content:center;margin-top:1rem;">
-      <button class="btn ${joined?'btn-secondary':'btn-primary'}" onclick="handleToggleClub('${c.id}',${joined})">
+      <button class="btn ${joined?'btn-secondary':'btn-primary'}" onclick="handleToggleClub('${c.id}',${joined},'${(c.name||'').replace(/'/g,'')}')">
         ${joined?'✓ Member — Click to leave':'Join This Club'}
       </button>
     </div>
   `);
 }
 
-async function handleToggleClub(id,currently) {
-  await togglePlayerClub(id,currently);
+async function handleToggleClub(id,currently,name) {
+  await togglePlayerClub(id,currently,name);
   showToast(currently?'Left the club.':'Joined!',currently?'info':'success');
   closeModal();
   initClubsPage();
@@ -1096,15 +1096,15 @@ function openJobModal(j,isMyJob) {
       <p style="font-size:0.85rem;">${j.roleplaying_hooks}</p>
     </div>
     <div style="display:flex;justify-content:center;margin-top:1rem;">
-      <button class="btn ${isMyJob?'btn-secondary':'btn-primary'}" onclick="handleToggleJob('${j.id}',${isMyJob})">
+      <button class="btn ${isMyJob?'btn-secondary':'btn-primary'}" onclick="handleToggleJob('${j.id}',${isMyJob},'${(j.title||j.name||'').replace(/'/g,'')}')">
         ${isMyJob?'Quit This Job':'Take This Job'}
       </button>
     </div>
   `);
 }
 
-async function handleToggleJob(id,currently) {
-  await setPlayerJob(currently ? null : id);
+async function handleToggleJob(id,currently,name) {
+  await setPlayerJob(currently ? null : id, name);
   showToast(currently?'Job vacated.':'Job taken! Good luck.',currently?'info':'success');
   closeModal();
   initJobsPage();

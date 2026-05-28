@@ -14,6 +14,13 @@
     .dm-panel { display:none; }
     .dm-panel.active { display:block; }
 
+    .activity-filter-bar { display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; padding:0.6rem 0 0.85rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem; }
+    .activity-chip { display:inline-flex; align-items:center; gap:0.35rem; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:999px; padding:0.25rem 0.7rem 0.25rem 0.3rem; font-size:0.74rem; color:var(--text-secondary); cursor:pointer; font-family:inherit; transition:all 0.15s; }
+    .activity-chip:hover { border-color:var(--gold-dim); color:var(--text-primary); }
+    .activity-chip.active { background:rgba(212,168,73,0.18); border-color:var(--gold); color:var(--gold); }
+    .activity-chip-avatar { width:20px; height:20px; border-radius:50%; object-fit:cover; background:var(--bg-panel); }
+    .activity-chip-avatar.empty { display:inline-flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; color:var(--text-muted); }
+    .activity-chip > button:first-child { padding-left:0.7rem; }
     .activity-item { display:flex; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid var(--border); align-items:flex-start; }
     .activity-item:last-child { border-bottom:none; }
     .activity-avatar { width:32px; height:32px; border-radius:50%; background:var(--bg-panel); border:1px solid var(--border); flex-shrink:0; object-fit:cover; display:flex; align-items:center; justify-content:center; font-size:0.9rem; overflow:hidden; }
@@ -286,44 +293,104 @@ function timeAgo(str) {
 }
 
 function activityDesc(log) {
-  const npc = log.entity_name ? `<strong>${log.entity_name}</strong>` : log.entity_id || 'someone';
+  const target = log.entity_name ? `<strong>${log.entity_name}</strong>` : (log.entity_id || 'something');
+  const sectionLabel = (typeof NOTE_SECTION_LABELS !== 'undefined' && NOTE_SECTION_LABELS[log.entity_id]) || log.entity_name || log.entity_id || 'a section';
   switch (log.action_type) {
-    case 'rel_status':   return `Set relationship with ${npc}: ${log.old_value||'Unknown'} → <strong>${log.new_value}</strong>`;
-    case 'bond_score':   return `Changed bond with ${npc}: ${log.old_value} → <strong>${log.new_value}/4</strong>`;
-    case 'note_updated': return `Updated notes for ${npc}`;
-    case 'favorited':    return `Starred ${npc} as a favourite`;
-    case 'unfavorited':  return `Removed ${npc} from favourites`;
-    default:             return `Updated ${npc}`;
+    case 'login':        return `Signed in`;
+    case 'rel_status':   return `Set relationship with ${target}: ${log.old_value||'Unknown'} → <strong>${log.new_value}</strong>`;
+    case 'bond_score':   return `Changed bond with ${target}: ${log.old_value} → <strong>${log.new_value}/4</strong>`;
+    case 'note_updated': return `Updated NPC notes for ${target}`;
+    case 'favorited':    return `Starred ${target} as a favourite`;
+    case 'unfavorited':  return `Removed ${target} from favourites`;
+    case 'note_saved':   return `Edited <strong>${sectionLabel}</strong> on the Notes page`;
+    case 'club_joined':  return `Joined the club <strong>${target}</strong>`;
+    case 'club_left':    return `Left the club <strong>${target}</strong>`;
+    case 'job_taken':    return `Took the job <strong>${target}</strong>`;
+    case 'job_quit':     return `Quit their job`;
+    default:             return `Updated ${target}`;
   }
 }
 
 /* ── Activity ───────────────────────────────────────────── */
+let _activityLogs = [];
+let _activityFilter = new Set();
+
 async function loadActivity() {
   document.getElementById('dm-activity-list').innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Loading…</p></div>';
-  const [logs, profiles] = await Promise.all([getActivityLog(150), getPlayerProfiles()]);
+  const [logs, profiles] = await Promise.all([getActivityLog(250), getPlayerProfiles()]);
   _profiles = profiles;
+  _activityLogs = logs;
+  renderActivity();
+}
+
+function toggleActivityFilter(userId) {
+  if (_activityFilter.has(userId)) _activityFilter.delete(userId);
+  else _activityFilter.add(userId);
+  renderActivity();
+}
+
+function clearActivityFilter() {
+  _activityFilter.clear();
+  renderActivity();
+}
+
+function renderActivity() {
+  const container = document.getElementById('dm-activity-list');
+  if (!container) return;
   const profMap = {};
-  profiles.forEach(p => { if (p.user_id) profMap[p.user_id] = p; });
-  if (!logs.length) {
-    document.getElementById('dm-activity-list').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No activity yet. Players need to log in and update their relationships.</p></div>';
+  _profiles.forEach(p => { if (p.user_id) profMap[p.user_id] = p; });
+
+  // Collect every distinct user id seen in logs, for filter chips
+  const userIds = [];
+  const seenIds = new Set();
+  _activityLogs.forEach(l => {
+    if (l.user_id && !seenIds.has(l.user_id)) { seenIds.add(l.user_id); userIds.push(l.user_id); }
+  });
+
+  const chipsHtml = userIds.length ? (
+    '<div class="activity-filter-bar">'
+    + '<span style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-right:0.25rem;">Filter:</span>'
+    + '<button class="activity-chip '+(_activityFilter.size===0?'active':'')+'" onclick="clearActivityFilter()">All</button>'
+    + userIds.map(uid => {
+        const prof = profMap[uid];
+        const log = _activityLogs.find(l => l.user_id === uid);
+        const name = prof?.player_name || prof?.character_name || log?.user_name || 'Unknown';
+        const av = prof?.avatar_url || log?.user_avatar;
+        const active = _activityFilter.has(uid) ? 'active' : '';
+        const avatarBit = av
+          ? '<img src="'+av+'" class="activity-chip-avatar" alt="">'
+          : '<span class="activity-chip-avatar empty">'+name.charAt(0).toUpperCase()+'</span>';
+        return '<button class="activity-chip '+active+'" onclick="toggleActivityFilter(\''+uid+'\')">'+avatarBit+name+'</button>';
+      }).join('')
+    + '</div>'
+  ) : '';
+
+  const filtered = _activityFilter.size
+    ? _activityLogs.filter(l => _activityFilter.has(l.user_id))
+    : _activityLogs;
+
+  if (!filtered.length) {
+    container.innerHTML = chipsHtml + '<div class="empty-state"><div class="empty-icon">📋</div><p>'
+      + (_activityFilter.size ? 'No activity from the selected players.' : 'No activity yet.')
+      + '</p></div>';
     return;
   }
-  document.getElementById('dm-activity-list').innerHTML = logs.map(log => {
+
+  container.innerHTML = chipsHtml + filtered.map(log => {
     const prof = profMap[log.user_id];
     const name = prof?.player_name || log.user_name || 'Unknown';
-    const charName = prof?.character_name ? ` <span style="color:var(--text-muted);font-weight:400;">(${prof.character_name})</span>` : '';
-    const av = log.user_avatar;
+    const charName = prof?.character_name ? ' <span style="color:var(--text-muted);font-weight:400;">('+prof.character_name+')</span>' : '';
+    const av = prof?.avatar_url || log.user_avatar;
     const avatarHtml = av
-      ? `<div class="activity-avatar"><img src="${av}" alt="${name}"></div>`
-      : `<div class="activity-avatar">${name.charAt(0).toUpperCase()}</div>`;
-    return `<div class="activity-item">
-      ${avatarHtml}
-      <div class="activity-body">
-        <div class="activity-who">${name}${charName}</div>
-        <div class="activity-what">${activityDesc(log)}</div>
-        <div class="activity-when">${timeAgo(log.created_at)}</div>
-      </div>
-    </div>`;
+      ? '<div class="activity-avatar"><img src="'+av+'" alt="'+name+'"></div>'
+      : '<div class="activity-avatar">'+name.charAt(0).toUpperCase()+'</div>';
+    return '<div class="activity-item">'
+      + avatarHtml
+      + '<div class="activity-body">'
+      +   '<div class="activity-who">'+name+charName+'</div>'
+      +   '<div class="activity-what">'+activityDesc(log)+'</div>'
+      +   '<div class="activity-when">'+timeAgo(log.created_at)+'</div>'
+      + '</div></div>';
   }).join('');
 }
 
