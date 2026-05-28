@@ -280,6 +280,70 @@ async function loadActivity() {
 }
 
 /* ── Players ────────────────────────────────────────────── */
+const SKILLS = [
+  {key:'acrobatics',label:'Acrobatics',ab:'DEX'},
+  {key:'animal-handling',label:'Animal Handling',ab:'WIS'},
+  {key:'arcana',label:'Arcana',ab:'INT'},
+  {key:'athletics',label:'Athletics',ab:'STR'},
+  {key:'deception',label:'Deception',ab:'CHA'},
+  {key:'history',label:'History',ab:'INT'},
+  {key:'insight',label:'Insight',ab:'WIS'},
+  {key:'intimidation',label:'Intimidation',ab:'CHA'},
+  {key:'investigation',label:'Investigation',ab:'INT'},
+  {key:'medicine',label:'Medicine',ab:'WIS'},
+  {key:'nature',label:'Nature',ab:'INT'},
+  {key:'perception',label:'Perception',ab:'WIS'},
+  {key:'performance',label:'Performance',ab:'CHA'},
+  {key:'persuasion',label:'Persuasion',ab:'CHA'},
+  {key:'religion',label:'Religion',ab:'INT'},
+  {key:'sleight-of-hand',label:'Sleight of Hand',ab:'DEX'},
+  {key:'stealth',label:'Stealth',ab:'DEX'},
+  {key:'survival',label:'Survival',ab:'WIS'},
+];
+
+function _abMod(score) { const m = Math.floor(((score||10)-10)/2); return (m>=0?'+':'')+m; }
+function _profBonus(level) { return Math.floor(((level||1)-1)/4)+2; }
+
+function updateModifiers() {
+  ['str','dex','con','int','wis','cha'].forEach(ab => {
+    const score = parseInt(document.getElementById('ep-'+ab)?.value)||10;
+    const el = document.getElementById('ep-'+ab+'-mod');
+    if (el) el.textContent = _abMod(score);
+  });
+  const lv = parseInt(document.getElementById('ep-level')?.value)||1;
+  const pbEl = document.getElementById('ep-prof-bonus');
+  if (pbEl) pbEl.textContent = '+'+_profBonus(lv);
+  updateCombatCalcs();
+}
+
+function updateCombatCalcs() {
+  const wis = parseInt(document.getElementById('ep-wis')?.value)||10;
+  const dex = parseInt(document.getElementById('ep-dex')?.value)||10;
+  const lv = parseInt(document.getElementById('ep-level')?.value)||1;
+  const pb = _profBonus(lv);
+  const wisMod = Math.floor((wis-10)/2);
+  const dexMod = Math.floor((dex-10)/2);
+  const initBonus = parseInt(document.getElementById('ep-initiative')?.value)||0;
+  const percProf = !!document.querySelector('.ep-skill-prof[value="perception"]')?.checked;
+  const insightProf = !!document.querySelector('.ep-skill-prof[value="insight"]')?.checked;
+  const pp = document.getElementById('ep-calc-pp');
+  const pi = document.getElementById('ep-calc-pi');
+  const initEl = document.getElementById('ep-calc-init');
+  if (pp) pp.textContent = 10 + wisMod + (percProf ? pb : 0);
+  if (pi) pi.textContent = 10 + wisMod + (insightProf ? pb : 0);
+  if (initEl) { const v = dexMod + initBonus; initEl.textContent = (v>=0?'+':'')+v; }
+}
+
+function switchPlayerTab(tab) {
+  ['profile','character','stats','combat'].forEach(t => {
+    const btn = document.getElementById('pmod-tab-'+t);
+    const panel = document.getElementById('pmod-'+t);
+    if (btn) btn.classList.toggle('active', t===tab);
+    if (panel) panel.style.display = t===tab?'':'none';
+  });
+  if (tab==='combat') updateCombatCalcs();
+}
+
 async function loadPlayers() {
   const profiles = await getPlayerProfiles();
   _profiles = profiles;
@@ -292,12 +356,18 @@ async function loadPlayers() {
       : `<div class="player-card-avatar" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">${(p.player_name||'?').charAt(0).toUpperCase()}</div>`;
     const lastSeen = p.last_seen ? timeAgo(p.last_seen) : 'Never';
     const collegeColor = {Lorehold:'#d4a849',Prismari:'#e06060',Quandrix:'#60b860',Silverquill:'#a0a0c8',Witherbloom:'#70b070'}[p.college] || 'var(--text-muted)';
+    const classLine = [p.class, p.subclass ? '('+p.subclass+')' : null, p.level ? 'Lv.'+p.level : null].filter(Boolean).join(' · ');
+    const hpLine = p.max_hp ? (p.current_hp != null ? p.current_hp+'/'+p.max_hp : p.max_hp) : null;
+    const combatLine = [p.armor_class ? 'AC '+p.armor_class : null, hpLine ? 'HP '+hpLine : null].filter(Boolean).join(' · ');
     return `<div class="player-card">
       ${avatarHtml}
       <div class="player-card-name">${p.player_name || 'Unnamed'}</div>
       ${p.character_name ? `<div class="player-card-char">${p.character_name}</div>` : ''}
+      ${p.race ? `<div class="player-card-meta" style="color:var(--text-secondary);font-size:0.7rem;">${p.race}</div>` : ''}
       ${p.college ? `<div class="player-card-meta" style="color:${collegeColor};">${p.college}</div>` : ''}
-      <div class="player-card-meta">${p.user_id ? `Last seen: ${lastSeen}` : '<span style="color:rgba(224,112,112,0.8);">Not yet logged in</span>'}</div>
+      ${classLine ? `<div class="player-card-meta">${classLine}</div>` : ''}
+      ${combatLine ? `<div class="player-card-meta" style="font-size:0.7rem;">${combatLine}</div>` : ''}
+      <div class="player-card-meta">${p.user_id ? 'Last seen: '+lastSeen : '<span style="color:rgba(224,112,112,0.8);">Not yet logged in</span>'}</div>
       ${p.notes ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;font-style:italic;">${p.notes}</div>` : ''}
       <div class="player-card-actions">
         <button class="btn btn-ghost btn-sm" style="font-size:0.72rem;" onclick="openEditPlayerModal('${p.id}')">Edit</button>
@@ -309,65 +379,108 @@ async function loadPlayers() {
 }
 
 function openAddPlayerModal(existingId) {
-  const existing = existingId ? _profiles.find(p => p.id === existingId) : null;
-  const title = existing ? 'Edit Player' : 'Add Player';
+  const e = existingId ? _profiles.find(p => p.id === existingId) : null;
+  const title = e ? 'Edit Player' : 'Add Player';
+  const skillProfs = Array.isArray(e?.skill_proficiencies) ? e.skill_proficiencies : [];
+  const saveProfs = Array.isArray(e?.saving_throw_proficiencies) ? e.saving_throw_proficiencies : [];
+  const lv = e?.level || 1;
 
   const loggedInAccounts = _profiles.filter(p => p.user_id && p.email);
   const emailField = loggedInAccounts.length
-    ? `<select id="ep-email" onchange="prefillFromEmailPick(this.value)"
-        style="background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.7rem;color:var(--text-primary);font-family:inherit;font-size:0.9rem;width:100%;">
-        <option value="">— Select account —</option>
-        ${loggedInAccounts.map(p => {
-          const label = p.player_name && p.player_name !== p.email
-            ? `${p.player_name} (${p.email})`
-            : p.email;
-          return `<option value="${p.email}" ${existing?.email===p.email?'selected':''}>${label}</option>`;
-        }).join('')}
-      </select>`
-    : `<input type="email" id="ep-email" placeholder="player@gmail.com" value="${existing?.email||''}">`;
+    ? '<select id="ep-email" onchange="prefillFromEmailPick(this.value)" style="background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.7rem;color:var(--text-primary);font-family:inherit;font-size:0.9rem;width:100%;">'
+      + '<option value="">— Select account —</option>'
+      + loggedInAccounts.map(p => {
+          const lbl = p.player_name && p.player_name !== p.email ? p.player_name+' ('+p.email+')' : p.email;
+          return '<option value="'+p.email+'" '+(e?.email===p.email?'selected':'')+'>'+lbl+'</option>';
+        }).join('')
+      + '</select>'
+    : '<input type="email" id="ep-email" placeholder="player@gmail.com" value="'+(e?.email||'')+'">';
 
-  openModal(`
-    <h3 style="margin-bottom:1.25rem;">${title}</h3>
-    <input type="hidden" id="edit-player-id" value="${existing?.id||''}">
-    <div class="modal-field">
-      <label>Player Name (real name / nickname)</label>
-      <input type="text" id="ep-player-name" placeholder="e.g. Sarah" value="${existing?.player_name||''}">
-    </div>
-    <div class="modal-field">
-      <label>Character Name</label>
-      <input type="text" id="ep-char-name" placeholder="e.g. Elowen Starweave" value="${existing?.character_name||''}">
-    </div>
-    <div class="modal-field">
-      <label>College</label>
-      <select id="ep-college">
-        <option value="">— None —</option>
-        ${['Lorehold','Prismari','Quandrix','Silverquill','Witherbloom'].map(c =>
-          `<option value="${c}" ${existing?.college===c?'selected':''}>${c}</option>`).join('')}
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Google Email (for linking their login)</label>
-      ${emailField}
-    </div>
-    <div class="modal-field">
-      <label>DM Notes</label>
-      <textarea id="ep-notes" rows="2" placeholder="Private notes about this player...">${existing?.notes||''}</textarea>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="savePlayer()">Save</button>
-    </div>
-  `);
-}
+  const abHtml = ['str','dex','con','int','wis','cha'].map(ab => {
+    const sc = e?.[ab+'_score'] || 10;
+    return '<div style="text-align:center;">'
+      + '<div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.25rem;">'+ab.toUpperCase()+'</div>'
+      + '<input type="number" id="ep-'+ab+'" min="1" max="30" value="'+sc+'" oninput="updateModifiers()" style="width:100%;text-align:center;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.2rem;color:var(--text-primary);font-size:1.05rem;font-weight:700;font-family:inherit;">'
+      + '<div id="ep-'+ab+'-mod" style="font-size:0.75rem;color:var(--gold);margin-top:0.2rem;">'+_abMod(sc)+'</div>'
+      + '</div>';
+  }).join('');
 
-function prefillFromLogin(profileId) {
-  if (!profileId) return;
-  const p = _profiles.find(pr => pr.id === profileId);
-  if (!p) return;
-  document.getElementById('edit-player-id').value = p.id;
-  document.getElementById('ep-player-name').value = p.player_name || '';
-  document.getElementById('ep-email').value = p.email || '';
-  // Leave character_name and college blank for DM to fill in
+  const savesHtml = ['STR','DEX','CON','INT','WIS','CHA'].map(s =>
+    '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-secondary);cursor:pointer;padding:0.2rem 0;">'
+    + '<input type="checkbox" class="ep-save-prof" value="'+s.toLowerCase()+'" '+(saveProfs.includes(s.toLowerCase())?'checked':'')+'>'
+    + s + '</label>'
+  ).join('');
+
+  const skillsHtml = SKILLS.map(sk =>
+    '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-secondary);cursor:pointer;padding:0.15rem 0;">'
+    + '<input type="checkbox" class="ep-skill-prof" value="'+sk.key+'" '+(skillProfs.includes(sk.key)?'checked':'')+' onchange="updateCombatCalcs()">'
+    + sk.label+' <span style="font-size:0.65rem;color:var(--text-muted);">'+sk.ab+'</span></label>'
+  ).join('');
+
+  openModal(
+    '<h3 style="margin-bottom:1rem;">'+title+'</h3>'
+    + '<input type="hidden" id="edit-player-id" value="'+(e?.id||'')+'">'
+    + '<div style="display:flex;gap:0.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap;">'
+    + '<button class="dm-tab-btn active" id="pmod-tab-profile" onclick="switchPlayerTab(\'profile\')" style="font-size:0.8rem;padding:0.4rem 0.9rem;">&#x1F464; Profile</button>'
+    + '<button class="dm-tab-btn" id="pmod-tab-character" onclick="switchPlayerTab(\'character\')" style="font-size:0.8rem;padding:0.4rem 0.9rem;">&#x2694;&#xFE0F; Character</button>'
+    + '<button class="dm-tab-btn" id="pmod-tab-stats" onclick="switchPlayerTab(\'stats\')" style="font-size:0.8rem;padding:0.4rem 0.9rem;">&#x1F3B2; Ability Scores</button>'
+    + '<button class="dm-tab-btn" id="pmod-tab-combat" onclick="switchPlayerTab(\'combat\')" style="font-size:0.8rem;padding:0.4rem 0.9rem;">&#x1F6E1;&#xFE0F; Combat</button>'
+    + '</div>'
+
+    // Profile tab
+    + '<div id="pmod-profile">'
+    + '<div class="modal-field"><label>Player Name (real name / nickname)</label><input type="text" id="ep-player-name" placeholder="e.g. Sarah" value="'+(e?.player_name||'')+'"></div>'
+    + '<div class="modal-field"><label>Character Name</label><input type="text" id="ep-char-name" placeholder="e.g. Elowen Starweave" value="'+(e?.character_name||'')+'"></div>'
+    + '<div class="modal-field"><label>College</label><select id="ep-college"><option value="">— None —</option>'
+    + ['Lorehold','Prismari','Quandrix','Silverquill','Witherbloom'].map(c => '<option value="'+c+'" '+(e?.college===c?'selected':'')+'>'+c+'</option>').join('')
+    + '</select></div>'
+    + '<div class="modal-field"><label>Google Email (for linking their login)</label>'+emailField+'</div>'
+    + '<div class="modal-field"><label>DM Notes</label><textarea id="ep-notes" rows="2" placeholder="Private notes about this player...">'+(e?.notes||'')+'</textarea></div>'
+    + '</div>'
+
+    // Character tab
+    + '<div id="pmod-character" style="display:none;">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">'
+    + '<div class="modal-field"><label>Race / Species</label><input type="text" id="ep-race" placeholder="e.g. Human" value="'+(e?.race||'')+'"></div>'
+    + '<div class="modal-field"><label>Level</label><input type="number" id="ep-level" min="1" max="20" value="'+lv+'" oninput="updateModifiers()"></div>'
+    + '<div class="modal-field"><label>Class</label><input type="text" id="ep-class" placeholder="e.g. Wizard" value="'+(e?.class||'')+'"></div>'
+    + '<div class="modal-field"><label>Subclass</label><input type="text" id="ep-subclass" placeholder="e.g. School of Divination" value="'+(e?.subclass||'')+'"></div>'
+    + '<div class="modal-field"><label>Background</label><input type="text" id="ep-background" placeholder="e.g. Sage" value="'+(e?.background||'')+'"></div>'
+    + '<div class="modal-field"><label>Speed (ft.)</label><input type="number" id="ep-speed" min="0" max="200" value="'+(e?.speed||30)+'"></div>'
+    + '</div></div>'
+
+    // Ability Scores tab
+    + '<div id="pmod-stats" style="display:none;">'
+    + '<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.75rem;">Proficiency bonus at level '+lv+': <strong style="color:var(--gold);" id="ep-prof-bonus">+'+_profBonus(lv)+'</strong></div>'
+    + '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.5rem;margin-bottom:1.25rem;">'+abHtml+'</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">'
+    + '<div><div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;">Saving Throws</div>'+savesHtml+'</div>'
+    + '<div><div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;">Skill Proficiencies</div>'
+    + '<div style="max-height:240px;overflow-y:auto;">'+skillsHtml+'</div></div>'
+    + '</div></div>'
+
+    // Combat tab
+    + '<div id="pmod-combat" style="display:none;">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1rem;">'
+    + '<div class="modal-field"><label>Armor Class</label><input type="number" id="ep-ac" min="0" max="30" value="'+(e?.armor_class||'')+'" placeholder="13"></div>'
+    + '<div class="modal-field"><label>Max HP</label><input type="number" id="ep-max-hp" min="1" value="'+(e?.max_hp||'')+'" placeholder="28"></div>'
+    + '<div class="modal-field"><label>Current HP</label><input type="number" id="ep-current-hp" value="'+(e?.current_hp!=null?e.current_hp:'')+'" placeholder="28"></div>'
+    + '</div>'
+    + '<div class="modal-field" style="max-width:50%;margin-bottom:1.25rem;"><label>Initiative Bonus <span style="font-size:0.7rem;">(extra beyond DEX mod)</span></label>'
+    + '<input type="number" id="ep-initiative" value="'+(e?.initiative_bonus||0)+'" oninput="updateCombatCalcs()"></div>'
+    + '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:1rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;text-align:center;">'
+    + '<div><div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Passive Perception</div><div id="ep-calc-pp" style="font-size:1.3rem;font-weight:700;color:var(--gold);">—</div></div>'
+    + '<div><div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Passive Insight</div><div id="ep-calc-pi" style="font-size:1.3rem;font-weight:700;color:var(--gold);">—</div></div>'
+    + '<div><div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Initiative</div><div id="ep-calc-init" style="font-size:1.3rem;font-weight:700;color:var(--gold);">—</div></div>'
+    + '</div></div>'
+
+    // Footer
+    + '<div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1rem;">'
+    + '<button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn btn-primary btn-sm" onclick="savePlayer()">Save</button>'
+    + '</div>'
+  );
+  setTimeout(updateCombatCalcs, 0);
 }
 
 function prefillFromEmailPick(email) {
@@ -382,15 +495,36 @@ function openEditPlayerModal(id) { openAddPlayerModal(id); }
 
 async function savePlayer() {
   const id = document.getElementById('edit-player-id').value;
+  const num = (elId, fallback=null) => { const v = parseInt(document.getElementById(elId)?.value); return isNaN(v) ? fallback : v; };
+  const str = elId => document.getElementById(elId)?.value.trim() || null;
+  const skillProfs = [...document.querySelectorAll('.ep-skill-prof:checked')].map(c => c.value);
+  const saveProfs = [...document.querySelectorAll('.ep-save-prof:checked')].map(c => c.value);
   const profile = {
-    id: id || undefined,
-    player_name: document.getElementById('ep-player-name').value.trim(),
-    character_name: document.getElementById('ep-char-name').value.trim(),
-    college: document.getElementById('ep-college').value || null,
-    email: document.getElementById('ep-email').value.trim() || null,
-    notes: document.getElementById('ep-notes').value.trim(),
+    player_name: document.getElementById('ep-player-name')?.value.trim() || '',
+    character_name: str('ep-char-name'),
+    college: document.getElementById('ep-college')?.value || null,
+    email: document.getElementById('ep-email')?.value.trim() || null,
+    notes: document.getElementById('ep-notes')?.value.trim() || '',
+    race: str('ep-race'),
+    class: str('ep-class'),
+    subclass: str('ep-subclass'),
+    level: num('ep-level', 1),
+    background: str('ep-background'),
+    speed: num('ep-speed', 30),
+    str_score: num('ep-str'),
+    dex_score: num('ep-dex'),
+    con_score: num('ep-con'),
+    int_score: num('ep-int'),
+    wis_score: num('ep-wis'),
+    cha_score: num('ep-cha'),
+    skill_proficiencies: skillProfs,
+    saving_throw_proficiencies: saveProfs,
+    armor_class: num('ep-ac'),
+    max_hp: num('ep-max-hp'),
+    current_hp: num('ep-current-hp'),
+    initiative_bonus: num('ep-initiative', 0),
   };
-  if (!id) delete profile.id;
+  if (id) profile.id = id;
   const ok = await upsertPlayerProfile(profile);
   if (ok) { closeModal(); loadPlayers(); loadStats(); showToast('Player saved!', 'success'); }
 }
