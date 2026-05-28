@@ -380,6 +380,121 @@ async function loadPlayers() {
   grid.innerHTML = cards + `<button class="dm-add-btn" onclick="openAddPlayerModal()">+ Add Player</button>`;
 }
 
+function toggleDDBImport() {
+  const sec = document.getElementById('ddb-import-section');
+  if (sec) sec.style.display = sec.style.display === 'none' ? '' : 'none';
+}
+
+function parseDDBCharacter(data) {
+  const statMap = {1:'str', 2:'dex', 3:'con', 4:'int', 5:'wis', 6:'cha'};
+  const abilNames = {strength:'str', dexterity:'dex', constitution:'con', intelligence:'int', wisdom:'wis', charisma:'cha'};
+  const scores = {str:10, dex:10, con:10, int:10, wis:10, cha:10};
+  data.stats?.forEach(s => { const k = statMap[s.id]; if (k && s.value) scores[k] = s.value; });
+
+  const mods = [
+    ...(data.modifiers?.race || []),
+    ...(data.modifiers?.class || []),
+    ...(data.modifiers?.background || []),
+    ...(data.modifiers?.feat || []),
+    ...(data.modifiers?.item || []),
+  ];
+
+  mods.forEach(m => {
+    if (m.type === 'bonus' && m.value) {
+      const match = m.subType?.match(/^([a-z]+)-score$/);
+      if (match && abilNames[match[1]]) scores[abilNames[match[1]]] += m.value;
+    }
+  });
+
+  const classes = data.classes || [];
+  const totalLevel = classes.reduce((s, c) => s + (c.level || 0), 0);
+  const classStr = classes.map(c => (c.definition?.name || '') + (c.level ? ' '+c.level : '')).filter(Boolean).join(' / ');
+  const subclassStr = classes.map(c => c.subclassDefinition?.name).filter(Boolean).join(' / ');
+
+  const maxHp = (data.baseHitPoints || 0) + (data.bonusHitPoints || 0);
+  const currentHp = maxHp ? maxHp - (data.removedHitPoints || 0) : null;
+  const speed = data.race?.weightSpeeds?.normal?.walk || 30;
+
+  const SKILL_KEYS = ['acrobatics','animal-handling','arcana','athletics','deception','history','insight','intimidation','investigation','medicine','nature','perception','performance','persuasion','religion','sleight-of-hand','stealth','survival'];
+  const skillProfs = new Set(), saveProfs = new Set();
+  mods.forEach(m => {
+    if (m.type === 'proficiency' || m.type === 'expertise') {
+      if (SKILL_KEYS.includes(m.subType)) skillProfs.add(m.subType);
+      else if (m.subType?.endsWith('-saving-throws')) {
+        const ab = m.subType.replace('-saving-throws','');
+        if (abilNames[ab]) saveProfs.add(abilNames[ab]);
+      }
+    }
+  });
+
+  let initBonus = 0;
+  mods.forEach(m => { if (m.type === 'bonus' && m.subType === 'initiative' && m.value) initBonus += m.value; });
+
+  let ac = null;
+  data.inventory?.forEach(item => {
+    if (item.equipped && item.definition?.armorClass) {
+      const base = item.definition.armorClass;
+      const armorTypeId = item.definition.armorTypeId;
+      const dexMod = Math.floor((scores.dex - 10) / 2);
+      let armorAC = base;
+      if (armorTypeId === 1) armorAC += dexMod;
+      else if (armorTypeId === 2) armorAC += Math.min(dexMod, 2);
+      ac = armorAC;
+    }
+  });
+  if (ac === null) ac = 10 + Math.floor((scores.dex - 10) / 2);
+  mods.forEach(m => { if (m.type === 'bonus' && m.subType === 'armor-class' && m.value) ac += m.value; });
+
+  return {
+    character_name: data.name || '',
+    race: data.race?.fullName || data.race?.baseName || '',
+    char_class: classStr,
+    subclass: subclassStr,
+    level: totalLevel || 1,
+    background: data.background?.definition?.name || '',
+    speed,
+    str_score: scores.str, dex_score: scores.dex, con_score: scores.con,
+    int_score: scores.int, wis_score: scores.wis, cha_score: scores.cha,
+    skill_proficiencies: [...skillProfs],
+    saving_throw_proficiencies: [...saveProfs],
+    armor_class: ac,
+    max_hp: maxHp || null,
+    current_hp: currentHp,
+    initiative_bonus: initBonus,
+  };
+}
+
+function applyDDBImport() {
+  const raw = document.getElementById('ddb-json-input')?.value?.trim();
+  if (!raw) { showToast('Paste the JSON first', 'warn'); return; }
+  let data;
+  try { data = JSON.parse(raw); }
+  catch (err) { showToast('Invalid JSON — could not parse', 'error'); return; }
+
+  const p = parseDDBCharacter(data);
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val != null && val !== '') el.value = val; };
+  set('ep-char-name', p.character_name);
+  set('ep-race', p.race);
+  set('ep-class', p.char_class);
+  set('ep-subclass', p.subclass);
+  set('ep-level', p.level);
+  set('ep-background', p.background);
+  set('ep-speed', p.speed);
+  set('ep-str', p.str_score); set('ep-dex', p.dex_score); set('ep-con', p.con_score);
+  set('ep-int', p.int_score); set('ep-wis', p.wis_score); set('ep-cha', p.cha_score);
+  set('ep-ac', p.armor_class);
+  set('ep-max-hp', p.max_hp);
+  set('ep-current-hp', p.current_hp);
+  set('ep-initiative', p.initiative_bonus);
+
+  document.querySelectorAll('.ep-skill-prof').forEach(c => { c.checked = p.skill_proficiencies.includes(c.value); });
+  document.querySelectorAll('.ep-save-prof').forEach(c => { c.checked = p.saving_throw_proficiencies.includes(c.value); });
+
+  updateModifiers();
+  toggleDDBImport();
+  showToast('Character imported — review and save', 'success');
+}
+
 function openAddPlayerModal(existingId) {
   const e = existingId ? _profiles.find(p => p.id === existingId) : null;
   const title = e ? 'Edit Player' : 'Add Player';
@@ -422,6 +537,20 @@ function openAddPlayerModal(existingId) {
   openModal(
     '<h3 style="margin-bottom:1rem;">'+title+'</h3>'
     + '<input type="hidden" id="edit-player-id" value="'+(e?.id||'')+'">'
+    + '<div style="margin-bottom:1rem;padding:0.6rem 0.75rem;border:1px dashed var(--gold-dim);border-radius:8px;background:rgba(212,168,73,0.04);">'
+    +   '<div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;">'
+    +     '<div style="font-size:0.8rem;color:var(--text-secondary);">📥 Import from D&amp;D Beyond</div>'
+    +     '<button onclick="toggleDDBImport()" class="btn btn-ghost btn-sm" style="font-size:0.72rem;">Paste JSON</button>'
+    +   '</div>'
+    +   '<div id="ddb-import-section" style="display:none;margin-top:0.6rem;">'
+    +     '<textarea id="ddb-json-input" placeholder="Paste the full JSON from dndbeyond.com/character/[ID]/json" rows="3" style="width:100%;font-family:monospace;font-size:0.72rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem;color:var(--text-primary);box-sizing:border-box;"></textarea>'
+    +     '<div style="display:flex;gap:0.4rem;margin-top:0.4rem;justify-content:flex-end;">'
+    +       '<button onclick="toggleDDBImport()" class="btn btn-ghost btn-sm" style="font-size:0.72rem;">Cancel</button>'
+    +       '<button onclick="applyDDBImport()" class="btn btn-primary btn-sm" style="font-size:0.72rem;">Import &amp; Fill</button>'
+    +     '</div>'
+    +     '<div style="font-size:0.66rem;color:var(--text-muted);margin-top:0.3rem;">Visit <code>dndbeyond.com/character/[ID]/json</code> while signed in, copy all, and paste here.</div>'
+    +   '</div>'
+    + '</div>'
     + '<div style="display:flex;gap:0.2rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap;">'
     + '<button class="dm-tab-btn active" id="pmod-tab-profile" onclick="switchPlayerTab(\'profile\')" style="font-size:0.8rem;padding:0.4rem 0.9rem;">&#x1F464; Profile</button>'
     + '<button class="dm-tab-btn" id="pmod-tab-character" onclick="switchPlayerTab(\'character\')" style="font-size:0.8rem;padding:0.4rem 0.9rem;">&#x2694;&#xFE0F; Character</button>'
