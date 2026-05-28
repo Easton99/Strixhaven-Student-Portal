@@ -325,13 +325,15 @@ function updateCombatCalcs() {
   const wisMod = Math.floor((wis-10)/2);
   const dexMod = Math.floor((dex-10)/2);
   const initBonus = parseInt(document.getElementById('ep-initiative')?.value)||0;
-  const percProf = !!document.querySelector('.ep-skill-prof[value="perception"]')?.checked;
-  const insightProf = !!document.querySelector('.ep-skill-prof[value="insight"]')?.checked;
+  const skillBonus = (skill) => {
+    const v = document.querySelector('.ep-skill-state[data-skill="'+skill+'"]')?.value;
+    return v === 'exp' ? 2*pb : (v === 'prof' ? pb : 0);
+  };
   const pp = document.getElementById('ep-calc-pp');
   const pi = document.getElementById('ep-calc-pi');
   const initEl = document.getElementById('ep-calc-init');
-  if (pp) pp.textContent = 10 + wisMod + (percProf ? pb : 0);
-  if (pi) pi.textContent = 10 + wisMod + (insightProf ? pb : 0);
+  if (pp) pp.textContent = 10 + wisMod + skillBonus('perception');
+  if (pi) pi.textContent = 10 + wisMod + skillBonus('insight');
   if (initEl) { const v = dexMod + initBonus; initEl.textContent = (v>=0?'+':'')+v; }
 }
 
@@ -411,24 +413,50 @@ function parseDDBCharacter(data) {
   const classStr = classes.map(c => (c.definition?.name || '') + (c.level ? ' '+c.level : '')).filter(Boolean).join(' / ');
   const subclassStr = classes.map(c => c.subclassDefinition?.name).filter(Boolean).join(' / ');
 
-  const maxHp = (data.baseHitPoints || 0) + (data.bonusHitPoints || 0);
+  const conMod = Math.floor((scores.con - 10) / 2);
+  const maxHp = data.overrideHitPoints != null
+    ? data.overrideHitPoints
+    : ((data.baseHitPoints || 0) + (data.bonusHitPoints || 0) + (conMod * totalLevel));
   const currentHp = maxHp ? maxHp - (data.removedHitPoints || 0) : null;
   const speed = data.race?.weightSpeeds?.normal?.walk || 30;
 
   const SKILL_KEYS = ['acrobatics','animal-handling','arcana','athletics','deception','history','insight','intimidation','investigation','medicine','nature','perception','performance','persuasion','religion','sleight-of-hand','stealth','survival'];
-  const skillProfs = new Set(), saveProfs = new Set();
+  const skillProfs = new Set(), saveProfs = new Set(), skillExp = new Set();
   mods.forEach(m => {
-    if (m.type === 'proficiency' || m.type === 'expertise') {
+    if (m.type === 'proficiency') {
       if (SKILL_KEYS.includes(m.subType)) skillProfs.add(m.subType);
       else if (m.subType?.endsWith('-saving-throws')) {
         const ab = m.subType.replace('-saving-throws','');
         if (abilNames[ab]) saveProfs.add(abilNames[ab]);
       }
     }
+    if (m.type === 'expertise' && SKILL_KEYS.includes(m.subType)) {
+      skillExp.add(m.subType);
+      skillProfs.add(m.subType);
+    }
   });
 
   let initBonus = 0;
   mods.forEach(m => { if (m.type === 'bonus' && m.subType === 'initiative' && m.value) initBonus += m.value; });
+
+  const ALIGNMENT_MAP = {1:'Lawful Good',2:'Neutral Good',3:'Chaotic Good',4:'Lawful Neutral',5:'True Neutral',6:'Chaotic Neutral',7:'Lawful Evil',8:'Neutral Evil',9:'Chaotic Evil'};
+  const alignment = ALIGNMENT_MAP[data.alignmentId] || '';
+
+  const langs = [];
+  mods.forEach(m => {
+    if (m.type === 'language' && m.subType) {
+      const name = m.subType.replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+      if (!langs.includes(name)) langs.push(name);
+    }
+  });
+
+  const senses = [];
+  mods.forEach(m => {
+    if (m.type === 'set-base' && m.subType && m.value) {
+      const name = m.subType.charAt(0).toUpperCase() + m.subType.slice(1);
+      senses.push(name + ' ' + m.value + ' ft.');
+    }
+  });
 
   let ac = null;
   data.inventory?.forEach(item => {
@@ -453,9 +481,13 @@ function parseDDBCharacter(data) {
     level: totalLevel || 1,
     background: data.background?.definition?.name || '',
     speed,
+    alignment,
+    languages: langs.join(', '),
+    senses: senses.join(', '),
     str_score: scores.str, dex_score: scores.dex, con_score: scores.con,
     int_score: scores.int, wis_score: scores.wis, cha_score: scores.cha,
     skill_proficiencies: [...skillProfs],
+    skill_expertise: [...skillExp],
     saving_throw_proficiencies: [...saveProfs],
     armor_class: ac,
     max_hp: maxHp || null,
@@ -486,8 +518,14 @@ function applyDDBImport() {
   set('ep-max-hp', p.max_hp);
   set('ep-current-hp', p.current_hp);
   set('ep-initiative', p.initiative_bonus);
+  set('ep-alignment', p.alignment);
+  set('ep-languages', p.languages);
+  set('ep-senses', p.senses);
 
-  document.querySelectorAll('.ep-skill-prof').forEach(c => { c.checked = p.skill_proficiencies.includes(c.value); });
+  document.querySelectorAll('.ep-skill-state').forEach(sel => {
+    const sk = sel.dataset.skill;
+    sel.value = p.skill_expertise.includes(sk) ? 'exp' : (p.skill_proficiencies.includes(sk) ? 'prof' : '');
+  });
   document.querySelectorAll('.ep-save-prof').forEach(c => { c.checked = p.saving_throw_proficiencies.includes(c.value); });
 
   updateModifiers();
@@ -499,6 +537,7 @@ function openAddPlayerModal(existingId) {
   const e = existingId ? _profiles.find(p => p.id === existingId) : null;
   const title = e ? 'Edit Player' : 'Add Player';
   const skillProfs = Array.isArray(e?.skill_proficiencies) ? e.skill_proficiencies : [];
+  const skillExp = Array.isArray(e?.skill_expertise) ? e.skill_expertise : [];
   const saveProfs = Array.isArray(e?.saving_throw_proficiencies) ? e.saving_throw_proficiencies : [];
   const lv = e?.level || 1;
 
@@ -528,11 +567,16 @@ function openAddPlayerModal(existingId) {
     + s + '</label>'
   ).join('');
 
-  const skillsHtml = SKILLS.map(sk =>
-    '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-secondary);cursor:pointer;padding:0.15rem 0;">'
-    + '<input type="checkbox" class="ep-skill-prof" value="'+sk.key+'" '+(skillProfs.includes(sk.key)?'checked':'')+' onchange="updateCombatCalcs()">'
-    + sk.label+' <span style="font-size:0.65rem;color:var(--text-muted);">'+sk.ab+'</span></label>'
-  ).join('');
+  const skillsHtml = SKILLS.map(sk => {
+    const state = skillExp.includes(sk.key) ? 'exp' : (skillProfs.includes(sk.key) ? 'prof' : '');
+    return '<label style="display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-secondary);cursor:pointer;padding:0.15rem 0;">'
+      + '<select class="ep-skill-state" data-skill="'+sk.key+'" onchange="updateCombatCalcs()" style="background:var(--bg-panel);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.25rem;font-size:0.68rem;color:var(--text-primary);font-family:inherit;flex-shrink:0;">'
+      + '<option value=""'+(state===''?' selected':'')+'>—</option>'
+      + '<option value="prof"'+(state==='prof'?' selected':'')+'>Prof</option>'
+      + '<option value="exp"'+(state==='exp'?' selected':'')+'>Exp</option>'
+      + '</select>'
+      + sk.label+' <span style="font-size:0.65rem;color:var(--text-muted);">'+sk.ab+'</span></label>';
+  }).join('');
 
   openModal(
     '<h3 style="margin-bottom:1rem;">'+title+'</h3>'
@@ -578,6 +622,12 @@ function openAddPlayerModal(existingId) {
     + '<div class="modal-field"><label>Subclass</label><input type="text" id="ep-subclass" placeholder="e.g. School of Divination" value="'+(e?.subclass||'')+'"></div>'
     + '<div class="modal-field"><label>Background</label><input type="text" id="ep-background" placeholder="e.g. Sage" value="'+(e?.background||'')+'"></div>'
     + '<div class="modal-field"><label>Speed (ft.)</label><input type="number" id="ep-speed" min="0" max="200" value="'+(e?.speed||30)+'"></div>'
+    + '<div class="modal-field"><label>Alignment</label><select id="ep-alignment">'
+    + ['','Lawful Good','Neutral Good','Chaotic Good','Lawful Neutral','True Neutral','Chaotic Neutral','Lawful Evil','Neutral Evil','Chaotic Evil','Unaligned']
+        .map(a => '<option value="'+a+'"'+(e?.alignment===a?' selected':'')+'>'+(a||'— None —')+'</option>').join('')
+    + '</select></div>'
+    + '<div class="modal-field"><label>Senses</label><input type="text" id="ep-senses" placeholder="e.g. Darkvision 60 ft." value="'+(e?.senses||'')+'"></div>'
+    + '<div class="modal-field" style="grid-column:1/-1;"><label>Languages</label><input type="text" id="ep-languages" placeholder="e.g. Common, Elvish, Undercommon" value="'+(e?.languages||'')+'"></div>'
     + '</div></div>'
 
     // Ability Scores tab
@@ -628,7 +678,12 @@ async function savePlayer() {
   const id = document.getElementById('edit-player-id').value;
   const num = (elId, fallback=null) => { const v = parseInt(document.getElementById(elId)?.value); return isNaN(v) ? fallback : v; };
   const str = elId => document.getElementById(elId)?.value.trim() || null;
-  const skillProfs = [...document.querySelectorAll('.ep-skill-prof:checked')].map(c => c.value);
+  const skillProfs = [], skillExp = [];
+  document.querySelectorAll('.ep-skill-state').forEach(sel => {
+    const sk = sel.dataset.skill;
+    if (sel.value === 'exp') { skillProfs.push(sk); skillExp.push(sk); }
+    else if (sel.value === 'prof') skillProfs.push(sk);
+  });
   const saveProfs = [...document.querySelectorAll('.ep-save-prof:checked')].map(c => c.value);
   const profile = {
     player_name: document.getElementById('ep-player-name')?.value.trim() || '',
@@ -642,6 +697,9 @@ async function savePlayer() {
     level: num('ep-level', 1),
     background: str('ep-background'),
     speed: num('ep-speed', 30),
+    alignment: document.getElementById('ep-alignment')?.value || null,
+    languages: str('ep-languages'),
+    senses: str('ep-senses'),
     str_score: num('ep-str'),
     dex_score: num('ep-dex'),
     con_score: num('ep-con'),
@@ -649,6 +707,7 @@ async function savePlayer() {
     wis_score: num('ep-wis'),
     cha_score: num('ep-cha'),
     skill_proficiencies: skillProfs,
+    skill_expertise: skillExp,
     saving_throw_proficiencies: saveProfs,
     armor_class: num('ep-ac'),
     max_hp: num('ep-max-hp'),
