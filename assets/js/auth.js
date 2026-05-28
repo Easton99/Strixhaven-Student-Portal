@@ -19,13 +19,30 @@ async function initAuth(requireAuth = true) {
   if (_dmMode) document.body.classList.add('dm-mode');
   else ensurePlayerProfile?.();
   if (_currentUser) {
-    const lastLogin = parseInt(localStorage.getItem('last_login_log_v2') || '0');
-    if (Date.now() - lastLogin > 30 * 60 * 1000) {
-      localStorage.setItem('last_login_log_v2', String(Date.now()));
-      logActivity?.('login', null, null, null, null, null);
-    }
+    await maybeLogLogin();
   }
   return true;
+}
+
+async function maybeLogLogin() {
+  if (typeof logActivity !== 'function') return;
+  if (!_currentUser || _dmMode) return;
+  const lastLogin = parseInt(localStorage.getItem('last_login_log_v3') || '0');
+  if (Date.now() - lastLogin <= 30 * 60 * 1000) return;
+  try {
+    const { error } = await sb.from('activity_log').insert({
+      user_id: _currentUser.id,
+      user_name: getUserName(),
+      user_avatar: getUserAvatar(),
+      action_type: 'login',
+      entity_type: null, entity_id: null, entity_name: null,
+      old_value: null, new_value: null,
+    });
+    if (error) { console.error('Login log failed:', error); return; }
+    localStorage.setItem('last_login_log_v3', String(Date.now()));
+  } catch (e) {
+    console.error('Login log threw:', e);
+  }
 }
 
 sb.auth.onAuthStateChange((event, session) => {
@@ -34,7 +51,10 @@ sb.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_OUT') {
     window.location.href = getBasePath() + 'login.html';
   }
-  if (event === 'SIGNED_IN') updateNavUser();
+  if (event === 'SIGNED_IN') {
+    updateNavUser();
+    maybeLogLogin();
+  }
 });
 
 function getCurrentUser() { return _currentUser; }
